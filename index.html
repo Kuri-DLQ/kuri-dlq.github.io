@@ -89,7 +89,7 @@
             >Docs</a
           >
           <a
-            href="https://github.com/ekko-realtime"
+            href="https://github.com/Kuri-DLQ/kuri"
             target="_blank"
             class="icon"
             ><i class="fab fa-github"></i
@@ -160,7 +160,7 @@
         <div class="bg-blue">
           <img
             class="ekko sm-screen"
-            src="images/logo/logo-name-vertical.png"
+            src="images/logo/logo_color.png"
           />
           <img class="ekko lg-screen" src="images/logo/logo_white.png" />
 
@@ -627,6 +627,13 @@
             Using microservices architecture however does increase the complexity of communication within the application. While a monolithic application can use method/function invocations for communication between different parts of the application, the distributed nature of microservices calls for a different approach.
           </p>
           <h3 id="section-1-2">1.2 Microservices Communication</h3>
+          <p>
+            Microservices can communicate synchronously via HTTP request/response cycles. However, to maximize the benefits of the decoupling nature of the microservices architecture, asynchronous communication can be used. One of the ways to implement asynchronous communication between microservices is to use a message queue that sits between the services. A message is the data transported between the sender service and the receiver service. The message queue holds the messages that are waiting to be processed by the receiver service. The service that adds messages to the queue is called a producer and the service that receives messages from the queue is called a consumer.
+          </p>
+          <p>
+            One of the main benefits of placing a message queue in between two services is that the services can be decoupled, that is, the processing of a message on the consumer side becomes independent from the production of the message on the producer side. The producer does not need any acknowledgement from the consumer, the producer’s only concern is to get the message delivered to the queue which handles the message from that point onwards. This adds more resilience to the entire system in that if the consumer fails for some reason, the producer is not affected. The producer can continue to add messages to the queue which will get processed when the consumer recovers from the failure. 
+          </p>
+          <img src="./images/diagrams/1.2.png" />
           <h3 id="section-1-3">1.3 Queues</h3>
           <h3 id="section-1-4">1.4 Queued messages</h3>
           <h3 id="section-1-5">1.5 Message Consumption</h3>
@@ -1920,7 +1927,7 @@
       <div class="bg-gray">
         <h2>Presentation</h2>
         <iframe
-          src="https://www.youtube-nocookie.com/embed/L-rbSRf2BrU?rel=0&controls=0&showinfo=0"
+          src="https://www.youtube-nocookie.com/embed/4cJkspwzjDQ?rel=0&controls=0&showinfo=0"
           title="YouTube video player"
           frameborder="0"
           allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
