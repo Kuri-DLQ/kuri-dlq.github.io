@@ -147,28 +147,29 @@
   }
 
   #start-here .static-logo-color {
-    background-image: url("../images/icon/app_icon.png");
+    background-image: url("../images/icon/graphic_mono.svg");
     background-repeat: no-repeat;
     background-attachment: fixed;
-    background-size: 25%;
-    background-position: calc(50% / 3) calc(50% + 2rem);
+    background-size: 5%;
+    background-position: calc(65% / 3) calc(85% + 2rem);
+    display: flex;
   }
 
   #start-here div.static-logo-teal-light {
-    background-image: url("../images/icon/graphic_white.png");
+    background-image: url("../images/icon/graphic_color.svg");
     background-repeat: no-repeat;
     background-attachment: fixed;
-    background-size: 25%;
-    background-position: calc(50% / 3) calc(50% + 2rem);
+    background-size: 5%;
+    background-position: calc(65% / 3) calc(85% + 2rem);
     display: flex;
   }
 
   #start-here div.static-logo-pink-light {
-    background-image: url("../images/icon/graphic_white.png");
+    background-image: url("../images/icon/graphic_white.svg");
     background-repeat: no-repeat;
     background-attachment: fixed;
-    background-size: 25%;
-    background-position: calc(50% / 3) calc(50% + 2rem);
+    background-size: 5%;
+    background-position: calc(65% / 3) calc(85% + 2rem);
     display: flex;
   }
 
