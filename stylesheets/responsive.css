@@ -150,8 +150,8 @@
     background-image: url("../images/icon/graphic_mono.svg");
     background-repeat: no-repeat;
     background-attachment: fixed;
-    background-size: 5%;
-    background-position: calc(65% / 3) calc(85% + 2rem);
+    background-size: 3%;
+    background-position: calc(70% / 3) calc(55% + 2rem);
     display: flex;
   }
 
@@ -159,8 +159,8 @@
     background-image: url("../images/icon/graphic_color.svg");
     background-repeat: no-repeat;
     background-attachment: fixed;
-    background-size: 5%;
-    background-position: calc(65% / 3) calc(85% + 2rem);
+    background-size: 3%;
+    background-position: calc(70% / 3) calc(55% + 2rem);
     display: flex;
   }
 
@@ -168,8 +168,8 @@
     background-image: url("../images/icon/graphic_white.svg");
     background-repeat: no-repeat;
     background-attachment: fixed;
-    background-size: 5%;
-    background-position: calc(65% / 3) calc(85% + 2rem);
+    background-size: 3%;
+    background-position: calc(70% / 3) calc(55% + 2rem);
     display: flex;
   }
 

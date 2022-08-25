@@ -561,7 +561,7 @@ body {
 }
 
 #start-here > div div:last-child > p.light-text {
-  color: var(--gray-300);
+  color: var(--white);
 }
 
 #start-here > div div:last-child > p > span {
