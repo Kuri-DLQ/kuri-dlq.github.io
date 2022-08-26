@@ -160,11 +160,7 @@
         <div class="bg-blue">
           <img
             class="ekko sm-screen"
-<<<<<<< HEAD
             src="images/logo/logo_color.svg"
-=======
-            src="images/logo/logo_white.svg"
->>>>>>> d11d55b3bbd0006071736f6a25ae3f2e3127399f
           />
           <img class="ekko lg-screen" src="images/logo/logo_white.svg" />
 
@@ -1021,7 +1017,7 @@
             The Inter-Service Communication component consists of 3 resources: the user’s producer and consumer flanking an 
             AWS SQS Queue. The queue serves to handle communication between the producer and consumer.
           </p>
-          <h3 id="section-6-2-1">6.2.1 Producers & Consumers</h3>
+          <h4 id="section-6-2-1">6.2.1 Producers & Consumers</h4>
           <p>
             The producer can be any service within a distributed system or microservices architecture that needs to communicate 
             with other services for asynchronous tasks. The asynchronous communication allows for time-consuming and non-urgent 
@@ -1031,7 +1027,7 @@
             On the other hand, the consumer can be any service that needs to access messages from a producer service. It’s 
             important to note that the consumer can only access messages that it has been granted permission for.
           </p>
-          <h3 id="section-6-2-2">6.2.2 Simple Queue Service (SQS)</h3>
+          <h4 id="section-6-2-2">6.2.2 Simple Queue Service (SQS)</h4>
           <p>
             The producers and consumers are connected by an SQS queue which is a fully managed messaging queue service that 
             enables the user to decouple and scale microservices, distributed systems, and serverless applications.
@@ -1061,7 +1057,7 @@
             This brings us to the next component in our infrastructure, the Failed Message Handling Component. This 
             component consists of the Dead-letter Queue which is directly attached to the main queue.
           </p>
-          <h3 id="section-6-3-1">6.3.1 Simple Queue Service Dead-Letter Queue</h3>
+          <h4 id="section-6-3-1">6.3.1 Simple Queue Service Dead-Letter Queue</h4>
           <p>
             As mentioned earlier the AWS-provided Simple Queue Service DLQ is designed to capture messages that 
             cannot be processed or consumed successfully by the consumer service. When Kuri is configured it provides 
@@ -1087,517 +1083,478 @@
           </p>
           <!--image goes here-->
           <h3 id="section-6-4">6.4 Fan-out</h3>
-          
+          <p>
+            The Fan-out component is responsible for transporting a message from the DLQ and providing separate routes for 
+            the distribution of the message to different resources. It consists of a Lambda that sends the message to a 
+            Simple Notification Service topic and two Lambdas that subscribe to the topic. We will explore each of these 
+            resources and their responsibilities in the next few sections. 
+          </p>
+          <h3 id="section-6-5">6.5 Simple Notification Service (SNS)</h3>
+          <p>
+            To begin with, the Simple Notification Service is a fully-managed messaging service for both application-to-application 
+            and application-to-person communication. Kuri makes use of both of these avenues.
+          </p>
+          <p>
+            The main design decision that needed to be considered for SNS is whether to use a standard or FIFO SNS topic. 
+            We decided to use a Standard SNS topic because it provides the qualities required to handle the potentially high 
+            volume of dead-letter messages coming from a standard SQS queue. In addition, the subscription protocols available 
+            for an SNS topic were an important consideration. While FIFO SNS topics only offer the SQS subscription protocol, 
+            the standard SNS topic allows the subscription of Lambdas by using the Lambda protocol.
+          </p>
+          <p>
+            The SNS receives a message from the publish-to-SNS Lambda and passes a copy of it out to its subscribers. During 
+            deployment, Kuri creates an SNS topic and adds two subscribers, the post-to-Slack and the write-to-Dynamo Lambdas.
+          </p>
+          <!--image goes here-->
+          <h3 id="section-6-6">6.6 Lambdas</h3>
+          <p>
+            Before going into the specific functionality of the Lambda resources attached to the SNS topic, let’s examine the 
+            properties of Lambdas. Lambda is a serverless compute service from AWS that allows the user to execute code without 
+            provisioning servers. Lambda functions can be invoked in response to certain triggers making them event-driven. 
+            In addition, Lambda functions can scale with the workload by concurrently invoking more instances of the function when 
+            needed. This ability to continuously scale is perfect for Kuri because dead-letter messages can come in at unexpectedly 
+            varying rates. This rate would depend on the number of producer services connected to the main queue and the amount of 
+            traffic coming into the application.
+          </p>
+          <!--image goes here-->
+          <h3 id="section-6-7">6.7 Publish-to-SNS Lambda</h3>
+          <p>
+            The publish-to-SNS Lambda is responsible for polling the DLQ for messages. The code within the Lambda will 
+            reformat the message structure from SQS formatting to SNS formatting which varies slightly. At that point, 
+            it will pass the message to the SNS topic for distribution to multiple other resources. 
+          </p>
+          <!--image goes here-->
+          <h3 id="section-6-8">6.8 Post-to-Slack & Write-to-Dynamo Lambdas</h3>
+          <p>
+            Both the Post-to-Slack and Write-to-Dynamo Lambdas subscribe to the SNS topic. They also add a timestamp 
+            to the message, ensure that the message attributes are formatted correctly, and pass the message to either Slack or DynamoDB.
+          </p>
+          <p>
+            While it would be possible to have one Lambda passing a message to both Slack and DynamoDB, we decided to implement two 
+            Lambdas that subscribe to the SNS topic. This decision follows the best practice of the single responsibility principle 
+            for functions and provides the opportunity for expanding functionality in the future by adding another Lambda to subscribe 
+            to the SNS topic.
+          </p>
+          <!--image goes here-->
+          <h3 id="section-6-9">6.9 Notification</h3>
+          <p>
+            The next component, Notification, is one of two branches of the Fan-out component. This component consists of Slack which 
+            allows immediate dead-letter message notifications to be sent to the Kuri user.
+          </p>
+          <h3 id="section-6-10">6.10 Slack</h3>
+          <p>
+            Slack is a messaging program for team and organization communication. Kuri offers the optional feature of sending 
+            DLQ notifications to the developer’s preferred Slack channel. This is set up by the developer by creating a Slack 
+            App using the Slack API interface. Once created, the developer can supply the provided Slack webhook path to Kuri 
+            during the initialization and configuration process before deployment.
+          </p>
+          <p>
+            Once this is set up, any messages that arrive in the developer's DLQ will trigger a notification within their Slack 
+            channel of choice. The notification will identify itself as a Kuri notification and provide insights about the DLQ 
+            message such as the main queue name, message body, timestamp, and message attributes.
+          </p>
+          <p>
+            This is especially convenient for developers who would like to closely monitor failed messages in a development 
+            or production environment without having to constantly keep an eye on the Kuri dashboard. These push notifications 
+            can help developers keep the mean time to resolution down in the case of any issues relating to failed messages.
+          </p>
+          <!--image goes here-->
+          <h3 id="section-6-11">6.11 Persistence</h3>
+          <p>
+            The second component that branches from the Fan-out component, Persistence, consists of DynamoDB which stores 
+            all of the dead-letter messages.
+          </p>
+          <h3 id="section-6-12">6.12 DynamoDB</h3>
+          <p>
+            To provide the ability for developers to view, edit, delete or re-drive their dead-letter messages back to the 
+            main queue, the messages need to be stored in a persistent datastore. 
+          </p>
+          <p>
+            The first design decision for Kuri’s datastore was to decide between the NoSQL and SQL database systems. 
+            We decided to go with a NoSQL over a SQL database since the dead-letter messages will already be in JSON 
+            format and need to remain in JSON format to be re-driven back to the main queue. NoSQL databases are far 
+            more suitable for storing and working with JSON data.
+          </p>
+          <p>
+            AWS offers many different options for NoSQL databases, including DynamoDB; a fully managed, serverless, 
+            key-value NoSQL database designed to run high-performance applications at any scale. Using DynamoDB allows 
+            Kuri to store DLQ messages without compromising the scalability and throughput of the entire application.
+          </p>
+          <!--image goes here-->
+          <p>
+            With the dead-letter messages safely stored in DynamoDB and Slack notifications established, how can a 
+            Kuri user take action when they receive a DLQ message notification? This brings us to the final component, User Interaction.
+          </p>
+          <h3 id="section-6-13">6.13 User Interaction</h3>
+          <p>
+            The User Interaction component provides the final functionality needed for the Kuri user to be able to view, 
+            modify, and re-drive dead-letter messages. The two-way relationship between the User Interaction component and 
+            the Persistence component allows for querying the message database. The User Interaction component also has a 
+            one-way relationship with the Inter-service Communication component as it provides an API route for messages to 
+            be re-driven back to the main queue.
+          </p>
+          <h3 id="section-6-14">6.14 Application Server</h3>
+          <p>
+            The application server is built primarily with Node.js and the Express framework. This combined with AWS’s DynamoDB 
+            SDK allows Kuri to provide RESTful API routes that are consumed with the React-built dashboard.
+          </p>
+          <!--image goes here-->
+          <p>
+            In terms of design decisions for the application server, we decided to go with REST APIs as we needed to interact 
+            with the database and provide the developer with a dashboard that makes it easy to interact with their DLQ messages.
+          </p>
+          <!--image goes here-->
+          <h3 id="section-6-15">6.15 Kuri Architecture</h3>
+          <p>
+            This brings us to the end of our high-level components and Fig 6.11 shows a diagram of the Kuri Architecture with all 
+            the resources discussed above. The diagram depicts the traversal of a message within the architecture.  A message 
+            originates from the producer service in the top left corner which pushes it to the main SQS queue. The message could 
+            either be successfully consumed by the consumer service, or the message could fail and get sent to the DLQ. 
+          </p>
+          <p>
+            The publish-to-SNS Lambda polls the DLQ and passes the message to the SNS topic. The SNS topic sends a copy of the 
+            message to the post-to-Slack and write-to-Dynamo Lambdas. Each Lambda passes a copy of the message to its respective 
+            endpoint, either Slack or DynamoDB.
+          </p>
+          <p>
+            At this point, the developer can use the Kuri dashboard to interact with the message stored in DynamoDB through the 
+            application server.  When the developer has made all the message modifications needed, the re-drive functionality can 
+            be used to move the message back to the main queue.
+          </p>
+          <!--architecture animation gif-->
+          <p>Now that we have discussed the entire Kuri architecture, the benefits of using the Kuri package can be readily understood.</p>
+          <h3 id="section-6-16">6.16 Benefits of using Kuri</h3>
+          <p>
+            How does Kuri make life easier for the developer from an implementation perspective? Kuri eliminates the need for the developer 
+            to set up and configure AWS resources needed to provide important features for dead-letter message management.
+          </p>
+          <p>
+            Figure 6.12 lists the resources Kuri provisions for deployment, including three queues and topics, two topic subscriptions, 
+            three Lambdas, a Dynamo table, and an S3 bucket. Additionally, an AWS IAM Role provisions 7 policy permissions relating to 
+            these resources. To sum up, Kuri automates the provisioning of a total of 17 resources for the developer.
+          </p>
+          <!--image goes here-->
+          <p>
+            Each piece of Kuri’s infrastructure has been connected using the AWS Software Development Kit (SDK) to provide developers 
+            with a DLQ pipeline to improve the development and maintenance experience in their projects. For a developer that is unfamiliar 
+            with the SDK and does not require the knowledge for their application, Kuri may save them the valuable time they would otherwise 
+            need to spend learning how to use the SDK.
+          </p>
+          <p>
+            Kuri is also widely applicable since an AWS Queue is the only user infrastructure dependency Kuri requires. Additionally, 
+            developers have the flexibility to use Kuri irrespective of which software development stack they are using.
+          </p>
+          <p>
+            Finally, once deployed, the Kuri dashboard can be accessed from anywhere and on any device as long as it has the AWS CLI and Node.js installed.
+          </p>          
 
           <!-- Section 7 -->
-          <h2 id="section-7">7. Using Ekko</h2>
-          <p>There are four main parts to Ekko:</p>
-          <ul>
-            <li>Ekko Server</li>
-            <li>Ekko Functions</li>
-            <li>Ekko CLI</li>
-            <li>Ekko Client</li>
-          </ul>
-          <img class="lazy" data-src="images/diagrams/parts.png" />
+          <h2 id="section-7">7. Challenges and Tradeoffs</h2>
           <p>
-            The Ekko Server manages realtime messages for applications with many
-            publishers and subscribers. It facilitates the processing of
-            realtime messages by invoking Ekko Functions.
+            During the design and implementation phase of Kuri, we came across several different challenges and design decisions 
+            in which we had to weigh the benefits and trade-offs of the available options. The following sections will discuss 
+            three of these challenges:
+            <ul>
+              <li>Which AWS development kit we chose to deploy our infrastructure</li>
+              <li>How we monitored our DLQ to provide real-time monitoring for our users</li>
+              <li>How we overcame an unusual design choice by AWS concerning SNS topics</li>
+            </ul>
+          </p>
+          <h3 id="section-7-1">7.1 CDK versus SDK</h3>
+          <p>
+            A significant challenge that was presented to us while building Kuri was deciding which framework we should use 
+            to build the user's AWS infrastructure. AWS offers two options, both of which allow the creation and configuration 
+            of AWS services through code.
           </p>
           <p>
-            Ekko Functions provide realtime middleware for in-transit message
-            processing. These functions are easy to create, update, and deploy
-            with the Ekko CLI tool. For complex workflows, developers can chain
-            multiple Ekko Functions together.
+            The first option we considered was to use the Cloud Development Kit (CDK),  AWS’s offering of Infrastructure as 
+            Code. The CDK is available in a wide range of languages and allows an entire stack of AWS components to be 
+            provisioned and configured from a single file of code. Given that the underlying architecture used in Kuri 
+            requires many different AWS services to be provisioned and then “glued together”, the CDK seemed like the perfect 
+            tool for us to use.
           </p>
           <p>
-            The Ekko CLI tool provides clear and simple commands that a
-            developer can use to manage Ekko Functions as well as spin up and
-            tear down the entire Ekko infrastructure.
+            However, the overall speed of the CDK was concerning, as some of the commands took a significant amount of time, 
+            especially compared to its counterpart, the SDK. Our goal for Kuri was to create a fast and simple command line 
+            tool that would allow users to have Kuri set up and ready to go in a matter of minutes.
+          </p>
+          <!--image goes here-->
+          <p>
+            In light of these concerns, we decided to run a spike to choose which 
+            developer kit would be best suited to fulfill the design goals we had in 
+            mind for Kuri. We used some boilerplate code of a simple resource stack 
+            provided by AWS and tested it with a prototype of our CLI tool using 
+            both the CDK and the SDK as the method of deploying the infrastructure.
           </p>
           <p>
-            Ekko Client enables developers to build realtime applications on top
-            of the Ekko Server. The Ekko Client exposes a handful of methods to
-            the developer, enabling clients to subscribe and unsubscribe to and
-            from channels, publish messages, and handle received messages.
-          </p>
-          <h3 id="section-7-1">7.1 Deploying Ekko</h3>
-          <p>
-            The Ekko Server infrastructure can easily be deployed to AWS by
-            running the <code>ekko init</code> command using the
-            <a
-              href="https://www.npmjs.com/package/ekko-realtime-cli"
-              target="_blank"
-              >Ekko CLI tool</a
-            >.
-          </p>
-          <img
-            class="lazy"
-            data-src="images/diagrams/cli-deploy-no-shadow.png"
-          />
-          <p>
-            The Ekko CLI prompts for AWS credentials and uses those, along with
-            AWS’ Cloud Development Kit (CDK), to deploy the Ekko infrastructure
-            to AWS.
-          </p>
-          <h3 id="section-7-2">7.2 Ekko Infrastructure</h3>
-          <img class="lazy" data-src="images/diagrams/infrastructure-1.png" />
-          <p>This is the infrastructure deployed by <code>ekko init</code>.</p>
-          <p>
-            The Ekko Server is a Node application deployed via container to AWS’
-            Elastic Container Service (ECS). The Application Load Balancer
-            distributes incoming WebSocket connections to the Ekko Server. We’ll
-            go into more detail on the importance of the S3 bucket and
-            ElastiCache instance in section 8.
-          </p>
-          <h3 id="section-7-3">7.3 Connecting an Application to Ekko Server</h3>
-          <p>
-            The Ekko Client is used to build realtime applications that make use
-            of the Ekko Server. Ekko Client can be
-            <a href="https://www.npmjs.com/package/ekko-realtime-client"
-              >installed with npm</a
-            >
-            or imported via CDN.
+            The first problem we encountered during the CDK test was exactly as we 
+            feared - it took a very long time to deploy. The infrastructure regularly 
+            took up to 5 minutes to deploy and during this time we had no control over 
+            the terminal output; having to display either nothing or a whole load of text 
+            generated by AWS that is difficult to understand and could look somewhat 
+            intimidating to the user. When running it in unison with a CLI, the long 
+            timeframe felt even longer and it became clear that this amount of wait time 
+            was counterproductive to our overall design goals.
           </p>
           <p>
-            Once Ekko Client is installed, it can be used to create a new Ekko
-            Client instance.
-          </p>
-          <img class="lazy" data-src="images/diagrams/ekko-instance.png" />
-          <p>
-            This Ekko Client Instance allows an application to connect, and send
-            realtime messages to the Ekko Server. Ekko Client takes a handful of
-            parameters including an app name, a host, a
-            <a href="https://jwt.io" target="_blank">JSON Web Token</a> (JWT),
-            and an optional universally unique identifier (UUID). The app name
-            is the developers choice, and the host and JWT can be generated
-            using the Ekko CLI. The UUID is normally generated and passed in by
-            the developer. But, if a UUID is not passed to the Ekko Client
-            instance, Ekko Client will automatically generate one.
-          </p>
-          <p>
-            Retrieving the host and generating JWT values can be done by running
-            the <code>ekko jwt</code> command in the Ekko CLI.
-          </p>
-          <img class="lazy" data-src="images/diagrams/jwt.png" />
-          <p>
-            The Ekko Server endpoint is retrieved by the CLI from a local
-            environment variable that is generated when the Ekko infrastructure
-            is deployed. This is the URL for the Application Load Balancer that
-            proxies WebSocket connections to the Ekko Server. Passing this value
-            as the host to the Ekko Client, enables it to connect and send
-            realtime messages to the Ekko Server.
+            The CDK certainly has its benefits, namely that its primary purpose of deploying 
+            a stack of infrastructure is exactly one of the goals we needed to achieve with 
+            Kuri. However, due to the long deployment time, we felt it was time to consider 
+            the possibility of using the SDK to deploy the infrastructure. We had already used 
+            it in some of our routes for our server which meant we had some familiarity with it. 
+            After careful consideration we concluded that the SDK had 3 main benefits over the CDK:
+            <ul>
+              <li>Significantly faster than the CDK - the deployment of a single resource takes seconds.</li>
+              <li>
+                Allows for asynchronous operations - this is in stark contrast to the CDK, which 
+                requires you to run a deploy command and then wait for it to finish. The methods 
+                made available by the SDK return Promises which would allow us to accurately update 
+                the user through our CLI and provide the choice of using `await` or `then` syntax. 
+                It also allowed us to update other components of the application synchronously.
+              </li>
+              <li>
+                Increased flexibility - instead of having to write and deploy entirely new stacks 
+                based on user needs, the SDK allows us to write one piece of code per component 
+                and deploy it whenever we want.
+              </li>
+            </ul>
           </p>
           <p>
-            The CLI tool generates JWTs using a secret that is generated when
-            the Ekko infrastructure is first deployed. Passing in an admin
-            token, instead of a user token, gives access to status events,
-            including connect, disconnect and error messages.
+            The spike had taught us that our best path to move forwards was to use the SDK. 
+            Several unforeseen challenges arose from this, mostly related to us needing to 
+            manually code some of the infrastructure components that the CDK would have 
+            implemented under the hood.
+          </p>
+          <!--image goes here-->
+          <p>
+            Our basic architecture includes an SQS queue, SNS topic, DynamoDB table, and 
+            Lambdas/subscriptions to either poll the queue or receive from the topic. Using 
+            the SDK required us to add the following extra infrastructure components to 
+            allow the major pieces of architecture to work together in unison.
           </p>
           <p>
-            Once an Ekko Client instance has been created, it exposes several
-            methods that you can use to interact with the Ekko Server. With
-            these methods, the client can subscribe and unsubscribe from
-            channels, publish messages, and handle messages of different types.
+            <ul>
+              <li>
+                IAM Role - the CDK created a specialized role for its infrastructure construct, 
+                but with the SDK we had to create one ourselves. Although this did require more 
+                code, it allowed us to have full control over which permissions we gave to the role.
+              </li>
+              <li>
+                S3 bucket - Lambda files must be zipped and then transferred to an S3 bucket for storage. 
+                This required us to not only manually zip the Lambda files, but also to hardcode them 
+                with the necessary user inputs before shipping them to the S3 bucket. Thankfully, 
+                the asynchronous nature of SDK methods allowed us to request responses from the AWS API, 
+                wait for them to be returned, and then insert them into the Lambdas before they were provisioned.
+              </li>
+              <li>
+                Permissions and subscriptions - although present in our CDK code, adding permissions and 
+                subscriptions to the different components using the SDK required more research and more 
+                code than the simple methods provided by the CDK.
+              </li>
+            </ul>
           </p>
           <p>
-            This is what it looks like when we have two clients connected to the
-            Ekko Server, subscribed to the same channel, publishing messages on
-            it.
-          </p>
-
-          <video autoplay loop muted playsinline>
-            <source
-              src="images/diagrams/infrastructure-2.mp4"
-              type="video/mp4"
-            />
-          </video>
-          <h3 id="section-7-4">7.4 Deploying Ekko Functions</h3>
-          <p>
-            To process realtime messages in transit, Ekko Functions need to be
-            deployed to AWS Lambda. When the Ekko infrastructure is deployed
-            with the <code>ekko init</code> command, it creates an
-            <code>ekko/ekko_functions</code> directory locally. From this
-            directory, <code>create</code>, <code>update</code>,
-            <code>deploy</code>, and <code>destroy</code> commands can be run to
-            manage Ekko Functions.
+            After completing and debugging our new infrastructure we were delighted to see that 
+            our intuition, guided by the spike, had been correct and that using the SDK to deploy 
+            the infrastructure had made a major difference to the overall user experience. Where 
+            testing had shown deployment with the CDK taking up to five minutes, we managed to 
+            get our deployment time down to under one minute while simultaneously having a simple 
+            and descriptive interface that keeps users informed of the installation progress.
           </p>
           <p>
-            Ekko Functions are created with a default file structure and format
-            so that they can be deployed to AWS Lambda. These functions can be
-            as simple as the example below, or a complex program with multiple
-            files. In this example, the demo-angry function exists in an
-            <code>index.js</code> file and simply takes the message payload,
-            capitalizes the text, and adds a few exclamation points.
+            On top of this, the asynchronous nature of the SDK allowed us to update the progress 
+            in the CLI as each resource was provisioned. In contrast, the CDK did not allow us to 
+            do this. Once the deployment had begun there was no return value from the code until it 
+            had finished.
           </p>
-          <img class="lazy" data-src="images/diagrams/angry.png" />
+          <h3 id="section-7-2">7.2 Implementing a CLI</h3>
           <p>
-            Once Ekko Functions are created, they can easily be deployed to AWS
-            Lambda with the <code>ekko deploy</code> command. After Ekko
-            Functions have been deployed, the
-            <code>associations.json</code> file in the
-            <code>ekko_functions</code> directory needs to be manually updated.
-          </p>
-          <img class="lazy" data-src="images/diagrams/associationsjson.png" />
-          <p>
-            <code>associations.json</code> informs the server what functions it
-            should use for processing messages published to a specific channel.
-            Once this file has been updated, the
-            <code>ekko update associations.json</code> command can be run which
-            stores the file on the S3 bucket mentioned earlier, and caches it on
-            the Ekko Server.
-          </p>
-          <h3 id="section-7-5">7.5 Transforming Messages in Realtime</h3>
-          <p>
-            After creating and deploying Ekko Functions, this is what the Ekko
-            infrastructure and message processing flow looks like:
-          </p>
-
-          <video autoplay loop muted playsinline>
-            <source
-              src="images/diagrams/infrastructure-3b.mp4"
-              type="video/mp4"
-            />
-          </video>
-          <p>
-            Now, when a client sends a message on the Angry channel, the server
-            forwards that message on to the Angry Lambda for processing. The
-            Angry Lambda sends the processed message back to the Ekko Server
-            which then emits the message out to all subscribed clients on the
-            Angry channel. The same occurs on the other two channels. The server
-            knows which functions are associated with which channels using
-            <code>associations.json</code>.
-          </p>
-          <!-- <img class="lazy" data-src="PLACEHOLDER WIDGET" /> -->
-          <p>
-            If you want to teardown your Ekko infrastructure, you can do that
-            with the <code>ekko teardown</code> command. This will tear down
-            your Ekko Infrastructure and all Ekko Functions deployed to AWS
-            Lambda.
+            Our goal with Kuri was to have a simple CLI that wouldn’t require the user to read pages
+            upon pages of complicated docs to get started. After researching various CLI frameworks 
+            we settled on Oclif, as it allowed us to run complex code within each command and had an 
+            intuitive class-based architecture for implementing commands.
           </p>
           <p>
-            As you can see, deploying your own realtime infrastructure and
-            managing realtime middleware is easy to do with Ekko. You have now
-            seen what Ekko is and how it works. In the next section, we show
-            three areas where we faced challenges while building Ekko.
+            One minor drawback to Oclif was that v1 had been deprecated and v2 required the use of 
+            TypeScript. During the CDK deployment testing mentioned previously, the CLI did not present 
+            a problem since we were using a minimal command to initiate the deployment. However, SDK 
+            deployment testing did pose some issues.
           </p>
+          <p>
+            The SDK code to deploy the infrastructure required each component to be created individually. 
+            Upon attempting to import the functions, which were written in JavaScript, we immediately ran 
+            into problems. The Oclif framework was expecting all imports to be in TypeScript and was then 
+            attempting to compile our JavaScript files, causing an error.
+          </p>
+          <p>
+            After realizing this problem we faced two choices; change the CLI framework 
+            or rewrite our entire AWS infrastructure in TypeScript. Although we were 
+            confident we could convert our JavaScript files to TypeScript, the clear choice 
+            was to find a framework that would allow us to create a CLI that didn’t require 
+            an extensive overhaul of our codebase. This, however, proved easier said than 
+            done as many of the frameworks we researched did not match Oclif’s ease of use 
+            and functionality which we had very much grown to love when implementing our 
+            CDK version of the CLI.
+          </p>
+          <p>
+            Faced with the growing prospect of converting our codebase to TypeScript, we 
+            debated one other possible solution: forgo the use of a framework and create a 
+            CLI tool from scratch using vanilla JavaScript that would meet our needs and 
+            requirements.
+          </p>
+          <p>
+            The prospect of being able to build a completely custom CLI tailored to our needs 
+            seemed like a great challenge to undertake that would lead to Kuri having all of 
+            the desired functionality that we had planned for, and so that's exactly what we 
+            did! Using vanilla JavaScript and the `inquirer` package, we created a CLI tool 
+            that met all of Kuri's requirements and can be installed globally as an npm package 
+            to respond to the 'Kuri' keyword.
+          </p>
+          <h3 id="section-7-3">7.3 How to monitor messages</h3>
+          <p>
+            A major design feature of Kuri is that it allows developers to receive instant 
+            notifications when a message fails and enters the dead letter queue. We believe 
+            this to be important because, on top of acting as a place to store failed messages, 
+            the DLQ can be thought of as a tool that provides a health check to the overall system. 
+            Few to zero messages in the DLQ is a reflection of a healthy application where everything 
+            is working, whereas a DLQ that is constantly inundated with new failed messages can act 
+            as a vital sign that there is a fault somewhere in your application.
+          </p>
+          <p>
+            Our initial thought was to use AWS Cloudwatch to monitor the DLQ and provide a notification 
+            each time a message was received. While building the initial prototype we set up Cloudwatch 
+            and sent batches of test data. To say we were underwhelmed with the results would be an 
+            understatement. Although Cloudwatch seemed reliable in that we always received an email 
+            notification that a message had entered the DLQ, the timeframe for receiving said notification 
+            left a lot to be desired. In testing we encountered a wide range of wait times for the notification, 
+            sometimes having to wait multiple hours.
+          </p>
+          <p>
+            As Kuri needed to offer real-time updates for the status of the DLQ, we needed to find a different 
+            solution. Luckily we had also been testing Lambdas in other parts of our architecture and had 
+            discovered that they have two very desirable properties - they are highly reliable AND instantaneous.
+          </p>
+          <p>
+            With AWS Lambdas appearing to be a leading candidate to control our notification system, our attention 
+            turned to what service we could couple with the Lambda to send real-time notifications. Another excellent 
+            benefit of Lambdas is their flexibility, it is entirely up to the user which code the Lambda function 
+            executes. We decided that as we wanted Kuri to work with a popular messenger app, we would integrate it with 
+            Slack as our method of choice to keep users informed. 
+          </p>
+          <p>
+            Slack offers a webhook service, whereby a POST request to a provided webhook path will instantly send 
+            a message to the designated Slack channel. Our Lambda was therefore responsible for retrieving the 
+            message from the DLQ, then sending the POST request to the user-provided Slack path with the message 
+            as the body of the request.
+          </p>
+          <!--image goes here-->
+          <h3 id="section-7-4">7.4 Problem using a Lambda to send the Slack notification</h3>
+          <p>
+            Using a Lambda to send the notification caused some problems with our current architecture. 
+            Once a message is successfully processed by a Lambda from an SQS queue, the message is 
+            permanently deleted. At this point, the architecture featured a Lambda polling the SQS 
+            queue and then sending the message to Slack. Unfortunately, as any message that had been 
+            processed would be deleted from the queue, we were unable to use a second Lambda to send 
+            the message to the DynamoDB as had been our original plan.
+          </p>
+          <p>
+            The obvious solution would be to make our Lambda responsible for sending the notification 
+            to Slack as well as sending the message to DynamoDB. We were apprehensive about doing this 
+            because we wanted our functions to follow the single responsibility principle. Provisioning 
+            a Lambda to be responsible for two very different actions would, as well as going against best 
+            practices, introduce a single point of failure for both of the key features Kuri provides. On 
+            top of that, any additional features we wished to add at a later date would also have to be 
+            added to the Lambda and we could easily envision the responsibilities of the Lambda quickly 
+            spiraling out of control.
+          </p>
+          <p>
+            Our more elegant solution to this problem was to introduce an SNS topic into our infrastructure. 
+            SNS topics allow for multiple subscriptions and push the messages to those subscriptions rather 
+            than relying on Lambdas continuously polling them. Using this design pattern we could use a Lambda 
+            to listen on the DLQ and then immediately push that message to the SNS topic. We built two Lambdas, 
+            one for Slack notifications and the other to send the message to DynamoDB, and subscribed them both 
+            to the SNS topic. Now each Lambda has a sole responsibility and it will be easier to add additional 
+            features to Kuri at a later date -  simply by writing a new Lambda and subscribing it to the SNS topic.
+          </p>
+          <!--image goes here-->
+          <h3 id="section-7-5">7.5 AWS Message Attributes</h3>
+          <p>
+            When sending a message to an SQS queue the user can add up to 10 attributes that are stored as 
+            properties on an attributes object. The attribute object as a whole is serialized before it is sent; 
+            therefore, AWS needs to keep track of the type of each attribute to convert it back once the message
+            has been received.
+          </p>
+          <p>
+            The types of messages available to an SQS queue are:
+            <ul>
+              <li>String</li>
+              <li>Number</li>
+              <li>Binary</li>
+              <li>Custom</li>
+            </ul>
+            Upon testing our prototype we were dismayed to discover that all of our test attributes that 
+            were sent with the type ‘Number’, ended up in our DynamoDB with a type of ‘String’.
+          </p>
+          <p>
+            To debug this issue we had to carefully trace the message through the pipeline from the initial 
+            message, to the main SQS queue, the DLQ, the Lambda, the SNS topic, the second Lambda, and the 
+            DynamoDB. The message was sent from the main queue to the DLQ without issues and was successfully 
+            polled from the DLQ by the Lambda. We, therefore, knew that the error was occurring either as the 
+            message was sent to the SNS topic or when the SNS published it to the Write-To-Dynamo Lambda.
+          </p>
+          <p>
+            We discovered that as the message was pushed from the SNS to a Lambda, an attribute that 
+            had previously had the type of ‘Number’ now had the type of ‘String’. We scoured the logic 
+            within the SNS that was responsible for sending the message to the Lambda but still came up 
+            empty-handed. After a deep dive into an AWS support forum, we finally came across a rather 
+            peculiar design choice which meant that SNS topic attributes with the type ‘Number’ are not 
+            compatible with AWS Lambdas.
+          </p>
+          <!--image goes here-->
+          <p>
+            As maintaining message integrity is a cornerstone of our Kuri application, we needed to find a 
+            solution to this design choice by AWS. The problem was clear, anytime an attribute had the type 
+            ‘Number’, it would be automatically converted to ‘String’ by AWS once the message was pushed 
+            from the SNS topic to its subscribed Lambdas. Our solution, therefore, needed to track the data 
+            type independently from the type attribute itself.
+          </p>
+          <p>
+            We achieved this by first reading the attribute type in our Lambda that publishes the message 
+            to the SNS topic. At this stage, all attribute types will be correct and so by reading their 
+            value, we were able to append the type of the attribute to the value property of the attribute. 
+            Adopting this approach effectively rendered the value of the type attribute redundant, exactly 
+            what we needed since it was unreliable and subject to change.
+          </p>
+          <p>
+            Once the message is then pushed by the SNS topic to the Lambda, we retain a reference to the 
+            original data type. The receiving Lambda can then read the appended data type, remove it, 
+            and make any necessary changes to the type attribute. Using this method we were able to achieve 
+            a 100% rate of type retention throughout our entire pipeline.
+          </p>
+          <!--image goes here-->
 
           <!-- Section 8 -->
-          <h2 id="section-8">8. Engineering Challenges</h2>
+          <h2 id="section-8">8. Future Work</h2>
           <p>
-            We faced several engineering challenges when building Ekko: how to
-            authenticate clients connecting to our server, how to associate
-            individual Ekko Functions with specific realtime channels, and how
-            to scale the infrastructure.
-          </p>
-          <h3 id="section-8-1">8.1 Authenticating Clients</h3>
-          <p>
-            Once we created an Ekko Server to manage realtime communication and
-            an Ekko Client API that developers could use to build realtime
-            applications, we faced the problem of authentication. With the
-            current design, Ekko Clients send messages to the developer's Ekko
-            Server endpoint. But the problem with this is that anyone can send
-            messages to this public endpoint, including bad actors.
-          </p>
-
-          <video autoplay loop muted playsinline>
-            <source src="images/diagrams/bad-actor-1.mp4" type="video/mp4" />
-          </video>
-          <p>
-            To validate Ekko Clients, we decided to use JSON Web Tokens (JWTs).
-            These are essentially API keys that can have a JSON object encoded
-            into it -- the data isn't private, but you can't change it without
-            breaking the API key. When the Ekko infrastructure is deployed, a
-            secret key is generated and stored as an environment variable on
-            Ekko Server and the CLI tool. When a developer runs the ekko jwt
-            command, the CLI tool uses the secret to generate app specific JWTs
-            that can be passed in to a new Ekko Client instance. The Ekko server
-            uses the same secret to authenticate JWTs and only allows clients
-            with a valid JWT to connect to it.
-          </p>
-
-          <video autoplay loop muted playsinline>
-            <source src="images/diagrams/bad-actor-2.mp4" type="video/mp4" />
-          </video>
-          <p>
-            Since we can encode data into the JWT, we used it to specify if the
-            connecting client was an admin or a normal user, and what app they
-            were allowed to access. This gave us basic app- and role-level
-            security.
-          </p>
-          <h3 id="section-8-2">8.2 Ekko Function Management</h3>
-          <p>
-            Like PubNub and Ably, we decided to use serverless functions to run
-            our realtime middleware code. But, we still needed to figure out how
-            to coordinate message processing. How would Ekko Server know which
-            messages needed to be processed by which functions?
-          </p>
-          <h4 id="section-8-2-1">8.2.1 Linking Ekko Functions with Messages</h4>
-
-          <video autoplay loop muted playsinline>
-            <source src="images/diagrams/linking.mp4" type="video/mp4" />
-          </video>
-          <p>
-            Since clients publish and subscribe to channels, it made sense to
-            link specific channels with specific Ekko functions. So if you’re
-            making a chat app that uses a profanity filter, you can create a
-            channel and all messages published to that channel get processed
-            with the profanity filter middleware. All subscribers to that
-            channel will receive the processed message.
+            We are all extremely pleased with the final version of Kuri and greatly enjoyed the experience 
+            of taking something from an initial concept to a fully working npm package available for 
+            public download.
           </p>
           <p>
-            We created an <code>associations.json</code> file to store these
-            associations between channels and functions.
-          </p>
-          <img class="lazy" data-src="images/diagrams/associationsjson.png" />
-          <p>
-            <code>associations.json</code> is organized by application. Each
-            application has an array of channels, and each of those channels
-            contain an array of Ekko Functions to be used for that channel. With
-            this file, the Ekko Server routes messages from a specific channel
-            to the Ekko Functions associated with that channel. Once processed,
-            messages are returned to the Ekko server and emitted to all
-            subscribed clients.
-          </p>
-          <p>
-            It’s worth noting that multiple functions can be chained together
-            and the Ekko Server will route messages to all of the functions, in
-            order, before emitting the processed message back out to
-            subscribers.
-          </p>
-
-          <video autoplay loop muted playsinline>
-            <source src="images/diagrams/chaining.mp4" type="video/mp4" />
-          </video>
-          <!-- <img class="lazy" data-src="PLACEHOLDER WIDGET" /> -->
-          <h4 id="section-8-2-2">8.2.2 Storing associations.json</h4>
-          <p>
-            The <code>associations.json</code> file is stored in an S3 bucket
-            and the developer is responsible for updating it locally and then
-            uploading it with the Ekko CLI tool.
-          </p>
-
-          <video autoplay loop muted playsinline>
-            <source src="images/diagrams/upload.mp4" type="video/mp4" />
-          </video>
-          <h4 id="section-8-2-3">8.2.3 Updating associations.json</h4>
-          <p>
-            We opted to cache the associations data on the server since we want
-            to minimize the amount of time it takes to process messages. But we
-            needed to figure out how to update the server nodes when a change
-            was made to the JSON file.
-          </p>
-          <p>
-            We looked at two ways for pushing the data to the Ekko Server. The
-            first option was to use the AWS service CloudWatch to send a message
-            through Simple Notification Service (SNS), another AWS service,
-            every time the S3 bucket registered an upload event.
-          </p>
-
-          <video autoplay loop muted playsinline>
-            <source
-              src="images/diagrams/updating-associations-cloudwatch.mp4"
-              type="video/mp4"
-            />
-          </video>
-
-          <p>
-            The second option was to update the Ekko Server directly at the same
-            time that we upload the new JSON file to the S3. This would involve
-            sending a <code>PUT</code> request to the Ekko Server with the JSON
-            object as the payload. We could just add this behind the scenes in
-            our CLI tool when the developer uses the
-            <code>ekko update</code> command. This was the option we chose since
-            it didn’t add any complexity to our infrastructure. The
-            <code>associations.json</code> file is sent as a JSON Web Token, and
-            the code for the <code>PUT</code> route on the server verifies it is
-            a valid token (in addition to decoding it and using that payload as
-            the new function-channel associations data.
-          </p>
-
-          <video autoplay loop muted playsinline>
-            <source
-              src="images/diagrams/updating-associations-put.mp4"
-              type="video/mp4"
-            />
-          </video>
-
-          <h3 id="section-8-3">8.3 Scaling Ekko</h3>
-          <p>
-            The final engineering challenge we needed to handle was around
-            scaling Ekko. We wanted the deployed infrastructure to be able to
-            scale up and down as needed. If there were more users connecting to
-            the realtime server, we needed to be able to support those
-            simultaneous connections, and if there was an increased volume of
-            messages passing through the server, we needed to be able to support
-            the speedy transmission of those messages as well as any
-            transformations or in-transit processing.
-          </p>
-          <h4 id="section-8-3-1">8.3.1 Deploying to AWS using CDK</h4>
-          <p>
-            Most of our scaling needs were handled by the choices we made when
-            deploying our infrastructure to AWS. We used AWS' Cloud Development
-            Toolkit (CDK) which synthesizes CloudFormation templates and then
-            deploys those constructs to AWS.
-          </p>
-          <img class="lazy" data-src="images/diagrams/cdk.png" />
-          <p>
-            We didn't want to have to deploy our scalable infrastructure
-            manually, using the AWS web interface. Options available to us
-            included something platform agnostic like
-            <a href="https://www.terraform.io" target="_blank">Terraform</a> or
-            the AWS homegrown equivalent,
-            <a
-              href="https://aws.amazon.com/cloudformation?tag=soumet-20"
-              target="_blank"
-              >CloudFormation</a
-            >
-            templates. CDK is a way to define those CloudFormation templates
-            using ordinary JavaScript code; it was appealing not to have to
-            handle the complexity of writing extremely long CloudFormation
-            templates from scratch and instead to define the infrastructure
-            'constructs' we wanted to provision.
-          </p>
-          <h4 id="section-8-3-2">8.3.2 Scaling the Ekko Server</h4>
-          <p>
-            The main part of Ekko that needed to be able to scale was the Ekko
-            server. We needed to support a flexible number of users connecting
-            to the realtime service as well as an increased volume of messages
-            being published.
-          </p>
-          <p>
-            In order to be able to scale flexibly, an attractive option for
-            horizontal scaling was to package up our server application as a
-            Docker container and then use AWS Fargate to scale those server
-            'tasks' up and down according to how taxed the particular task
-            instance became.
-          </p>
-          <img class="lazy" data-src="images/diagrams/scaling.png" />
-          <p>
-            Fargate scales according to rules defined to account for how much
-            CPU and memory each container instance is using. We can specify
-            minimum and maximum boundary values to constrain how many containers
-            AWS can run. Fargate is not always completely transparent to use,
-            but it does handle our core problem of wanting to horizontally scale
-            our Ekko Server.
-          </p>
-          <h4 id="section-8-3-3">8.3.3 Establishing WebSocket Connections</h4>
-          <p>
-            Our next challenge came from the way our load balancer was routing
-            incoming connections and how that disrupted our need for persistent
-            WebSocket connections.
-          </p>
-          <p>
-            Socket.IO makes one request to set a connection ID, and a subsequent
-            upgrade request to establish the long lived WebSocket connection.
-            These two requests must go to the same backend process, but by
-            default our load balancer — AWS' Application Load Balancer — may
-            send the two requests to different Fargate container instances, so
-            the connection may not be successful.
-          </p>
-
-          <video autoplay loop muted playsinline>
-            <source src="images/diagrams/ws-fail.mp4" type="video/mp4" />
-          </video>
-          <p>
-            When we first tried out Ekko on AWS infrastructure we could not
-            establish WebSocket connections for this reason.
-          </p>
-          <p>
-            The fix for this was to enable sticky sessions as a policy for our
-            Fargate task definition. We updated our CDK code to specify this
-            sticky property. Now each Ekko client gets routed to the same server
-            instance to which it was initially assigned and WebSocket
-            connections work as they should.
-          </p>
-
-          <video autoplay loop muted playsinline>
-            <source src="images/diagrams/ws-work.mp4" type="video/mp4" />
-          </video>
-          <h4 id="section-8-3-4">8.3.4 Scaling WebSocket Connections</h4>
-          <p>
-            Once our infrastructure was deployed, we wanted to make sure our
-            original server code continued to function as designed. Scaling to
-            multiple instances of the Ekko server presented an immediate
-            problem: how would all server instances know which messages were
-            being published on the various other instances?
-          </p>
-          <p>This animation illustrates the problem of scaling WebSockets:</p>
-
-          <video autoplay loop muted playsinline>
-            <source src="images/diagrams/ws-problem.mp4" type="video/mp4" />
-          </video>
-          <p>
-            If we have two instances of the Ekko server, the load balancer is
-            going to connect one user to server instance A and the other to
-            server instance B. In this scenario, they are both subscribed to the
-            same channel so that they can chat with each other. Alice has a
-            WebSocket connection to server A and when she publishes her message,
-            server A receives it and publishes that message to the channel so
-            that all subscribers will receive it. However, only the WebSockets
-            connected with server A will get that message, so Bob won’t receive
-            it since he’s connected to server B.
-          </p>
-          <p>
-            In order to solve this problem, we used the Socket.IO Redis adapter
-            library. This library uses a Redis instance to broadcast events to
-            all of the Socket.IO server nodes.
-          </p>
-
-          <video autoplay loop muted playsinline>
-            <source src="images/diagrams/ws-solution.mp4" type="video/mp4" />
-          </video>
-          <p>
-            Alice’s message, published to server node A, is automatically
-            published to server node B and emitted out to all subscribers.
-          </p>
-          <h4 id="section-8-3-5">8.3.5 Syncing Associations Data</h4>
-          <p>
-            A final engineering challenge we encountered was figuring out how to
-            synchronise state between all our Ekko Server instances.
-            Specifically, we needed to ensure that all server instances had the
-            latest version of the associations.json data (which pairs channels
-            with the Ekko Functions that will execute on all associated messages
-            passing through).
-          </p>
-          <p>
-            When updates are made to the <code>associations.json</code> file, we
-            use the CLI tool to upload these updates to the S3 bucket for
-            storage. We also let the Ekko Server know by sending a
-            <code>PUT</code> request with the new associations data as the
-            payload. In this way, the current server uses the data sent via the
-            <code>PUT</code> request, and new server instances spinning up will
-            use the latest version of the associations data in the S3 bucket.
-          </p>
-          <p>
-            However, we had a problem. The request will be routed to just one of
-            the Ekko Server instances. We need to be able to notify all of the
-            Ekko Server instances with the updated data. As you can see from the
-            animation, our <code>PUT</code> request does update one of our
-            server container instances, but this update isn't shared with the
-            others.
-          </p>
-
-          <video autoplay loop muted playsinline>
-            <source src="images/diagrams/put-fail.mp4" type="video/mp4" />
-          </video>
-          <p>
-            Our solution to this was to use the standard Redis package. The
-            server that receives the message publishes the file to the Redis /
-            ElastiCache cluster, and all the other server instances in turn are
-            subscribed to the Redis cluster and receive a copy of the new
-            associations data. This allowed us to keep our server instances
-            synchronised.
-          </p>
-
-          <video autoplay loop muted playsinline>
-            <source src="images/diagrams/put-work.mp4" type="video/mp4" />
-          </video>
-          <p>
-            Solving these various engineering challenges allowed us to build
-            Ekko out such that it was working as we hoped, and it was also able
-            to scale. At this point, we wanted to make sure that the service as
-            a whole could function under realistic use loads.
+            As is the case in software development, there will always be room for additional features that 
+            could be included in Kuri V2 and beyond. Given more time to work on Kuri we would be excited to 
+            release the following features:
+            <ul>
+              <li>
+                The ability to access consumer logs that would let us provide a reason a message was dead-letter queued.
+              </li>
+              <li>
+                Creating slack notifications that allow users to delete or re-drive the message directly from Slack
+              </li>
+              <li>
+                A teardown command that will destroy the infrastructure for the user with a single command.
+              </li>
+            </ul>
           </p>
         </div>
       </div>
