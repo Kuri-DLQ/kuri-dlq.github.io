@@ -1120,14 +1120,14 @@
             varying rates. This rate would depend on the number of producer services connected to the main queue and the amount of 
             traffic coming into the application.
           </p>
-          <img src="images/diagrams/6.9.png" />
+          <img src="images/diagrams/6.9.jpeg" />
           <h3 id="section-6-7">6.7 Publish-to-SNS Lambda</h3>
           <p>
             The publish-to-SNS Lambda is responsible for polling the DLQ for messages. The code within the Lambda will 
             reformat the message structure from SQS formatting to SNS formatting which varies slightly. At that point, 
             it will pass the message to the SNS topic for distribution to multiple other resources. 
           </p>
-          <img src="images/diagrams/6.10.png" />
+          <img src="images/diagrams/6.10.jpeg" />
           <h3 id="section-6-8">6.8 Post-to-Slack & Write-to-Dynamo Lambdas</h3>
           <p>
             Both the Post-to-Slack and Write-to-Dynamo Lambdas subscribe to the SNS topic. They also add a timestamp 
