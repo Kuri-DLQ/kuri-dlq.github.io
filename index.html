@@ -640,6 +640,7 @@
             programming language and data storage system that are most suitable for its function. 
             (Ref: https://martinfowler.com/articles/microservices.html)
           </p>
+          <img src="images/diagrams/1.1.png" />
           <p>
             Using microservices architecture however does increase the complexity of communication 
             within the application. While a monolithic application can use method/function invocations 
@@ -750,6 +751,7 @@
             service that they came into the ordering service. For these reasons, the BuyMe team decided that an 
             AWS standard SQS queue would be a good choice for the job. 
           </p>
+          <img src="images/diagrams/2.1.png" />
           <p>
             Any live data dashboards, such as stock prices ticking up and down
             on a website, are examples of realtime web applications. The same
@@ -767,7 +769,7 @@
             technologies, and alongside that we see application users
             increasingly expecting realtime data.
           </p>
-          <!--image goes here-->
+    
           <p>
             After an extended period of testing and development, the transition was 
             completed and the company confidently moved its new AWS architecture into production.
@@ -780,7 +782,7 @@
             expect to see. They discover that a considerable number of messages still in the queue 
             should have been processed by the inventory service already. 
           </p>
-          <!--image goes here-->
+          <img src="images/diagrams/2.2.png" />
           <p>
             They could just delete the unprocessed messages but that would mean orders would go 
             unfulfilled causing customer dissatisfaction and profit loss. To try to alleviate the 
@@ -797,7 +799,7 @@
             messages will not remain in the queue and no messages will be lost during communication between 
             services.
           </p>
-          <!--image goes here-->
+          <img src="images/diagrams/3.1.png" />
           <h3 id="section-3-2">3.2 How is a DLQ configured?</h3>
           <p>
             When configuring a DLQ, it is imperative to specify the conditions under which the main queue 
@@ -824,7 +826,7 @@
             would allow the consumer enough chances to retry processing a message and would also avoid blocking 
             the queue for a significant amount of time.
           </p>
-          <!--image goes here-->
+          <img src="images/diagrams/3.2.png" />
 
           <h3 id="section-3-3">3.3 Importance of DLQs</h3>
           <p>
@@ -843,7 +845,7 @@
             succeed. It is a source of error-handling strategies ranging from simple reprocessing of messages by 
             the main queue to advanced analytics of message data for real-time insights.
           </p>
-          <!--image goes here-->
+          <img src="images/diagrams/3.3.png" />
 
           <h3 id="section-3-4">3.4 The AWS DLQb</h3>
           <p>
@@ -859,7 +861,7 @@
             from the DLQ. This is a red flag for the BuyMe team as they do not want any orders to get deleted before 
             they are properly fulfilled!
           </p>
-          <!--image goes here-->
+          <img src="images/diagrams/3.4.png" />
           <p>
             Another issue is that the entire list of messages is not immediately available for viewing. Instead, the 
             BuyMe team discovers that they must manually poll for it. While the team can change the polling settings 
@@ -867,7 +869,7 @@
             polling attempt, as only a random subset of them is fetched. Once a message has been fetched, they can 
             inspect the message body and attributes.
           </p>
-          <!--image goes here-->
+          <img src="images/diagrams/3.41.png" />
           <p>
             A first look makes the BuyMe engineers suspect that the messages are failing due to character-encoding 
             errors in the SKU number. To debug this issue, they would ideally like to manually modify each problematic 
@@ -877,7 +879,7 @@
             offer the option to modify the messages before the re-drive. Even if they were able to modify the messages, 
             the AWS SQS console only allows batch re-drive and not individual message re-drive.
           </p>
-          <!--image goes here-->
+          <img src="images/diagrams/3.6.png" />
           <p>
             The BuyMe engineers realize that the limited built-in functionality of the AWS DLQ does not meet their 
             requirements. They require a tool that will allow them to view all messages in the DLQ, both as a list and 
@@ -912,12 +914,12 @@
             which accordingly offer more control, albeit at the potential
             expense of more configuration and deployment issues.
           </p>
-          <!--image goes here-->
+          <img src="images/diagrams/4.1.png" />
           <p>
             The BuyMe team is in a bit of a bind. Currently, they are restricted by the offerings of the AWS DLQ but can’t make 
             use of any of the available DLQ monitoring tools discussed above, missing out on extensive functionality.
           </p>
-          <!--image goes here-->
+          <img src="images/diagrams/4.2.png" />
           <p>
             So what options does the team at BuyMe have when they discover that a message has failed to be processed and 
             has been moved to the AWS DLQ? Currently, they are restricted by the offerings of the AWS DLQ and can’t make 
@@ -933,7 +935,7 @@
             infrastructure. When we compare Kuri with the functionality of the AWS DLQ and the capabilities of the existing 
             monitoring tools, Kuri meets the majority of the requirements and is compatible with AWS queues. 
           </p>
-          <!--image goes here-->
+          <img src="images/diagrams/5.1.png" />
           <p>Aside from being open-source, there are many reasons why Kuri would be a great tool for the BuyMe team.</p>
           <p>
             First, by providing just a handful of responses to command line questions posed by Kuri, a pipeline incorporating 
@@ -953,7 +955,7 @@
               <li>Delete and re-drive individual messages or perform batch delete and re-drive operations</li>
             </ul>
           </p>
-          <!--image goes here-->
+          <img src="images/diagrams/5.12.png" />
           <h3 id="section-5-2">5.2 Kuri installation</h3>
           <p>
             There are three steps our team at BuyMe will take to install and use Kuri. The first step is to install 
@@ -961,28 +963,28 @@
             as seamless as possible. The BuyMe team will not need to manually update configuration files or make any adjustments 
             once the set-up is complete.
           </p>
-          <!--gif goes here-->
+          <img src="images/gifs/kuri-install.gif" />
           <p>
             Once installation is finished, the commands available in the Kuri package can be pulled up, which currently are the 
             `deploy` and `view` commands.
           </p>
-          <!--image goes here-->
+          <img src="images/gifs/kuri.gif" />
           <p>
             When deploying the application, our team at BuyMe will choose for Kuri to create a DLQ only as they already have 
             the main queue. They’ll provide its URL and their AWS region and instruct Kuri to send notifications to their Slack 
             channel. Finally, they’ll confirm the configuration options and Kuri will be deployed through the provision of the 
             various AWS resources.
           </p>
-          <!--gif goes here-->
+          <img src="images/gifs/kuri-deploy.gif" />
           <p>And that’s it, Kuri is deployed, leaving them with the final step of viewing and interacting with the Kuri dashboard.</p>
-          <!--gif goes here-->
+          <img src="images/gifs/kuri-view.gif" />
           <h3 id="section-5-3">5.3 Kuri dashboard</h3>
           <p>
             When opening the dashboard, the team can first see a summary of the current state of the DLQ at the top left corner. 
             Each message with its id, timestamp, and body is displayed in a table format. There is functionality available for 
             sorting and viewing the messages according to the message timestamp and body.
           </p>
-          <!--image goes here-->
+          <img src="images/diagrams/5.3.png" />
           <p>
             They can also re-drive all the messages back to the main queue for one more attempt at processing by the consumer. If 
             the attempt is unsuccessful, the messages will reappear in the DLQ. 
@@ -992,12 +994,12 @@
             details which include the id, timestamp, body, and some optional user-provided properties. If required, they can 
             permanently delete the message from the queue.
           </p>
-          <!--image goes here-->
+          <img src="images/diagrams/5.31.png" />
           <p>
             They can also edit the message and save the updated version back in the DLQ. Most importantly, after editing the 
             message they have the option to re-drive the message back to the main queue so that the consumer can retry processing it.
           </p>
-          <!--image goes here-->
+          <img src="images/diagrams/5.32.gif" />
           <p>Finally, they can batch-delete the messages if they do not need to perform any further processing.</p>
           <p>
             We’ve explored the requirements of the BuyMe team that Kuri satisfies and how they can use it. Now it’s 
@@ -1013,7 +1015,7 @@
             down each high-level component into the AWS resources that make up the component. We will discuss the relationship 
             between those resources and how they function together to fulfill the responsibilities of the component.
           </p>
-          <!--image goes here-->
+          <img src="images/diagrams/6.1.png" />
           <h3 id="section-6-2">6.2 Inter-Service Communication</h3>
           <p>
             The Inter-Service Communication component consists of 3 resources: the user’s producer and consumer flanking an 
@@ -1053,7 +1055,7 @@
             At this point in our infrastructure, messages will be sent from the producer to the queue, the consumer will 
             poll for messages and try to process them. But what if messages are failing to be consumed?
           </p>
-          <!--image goes here-->
+          <img src="images/diagrams/6.2.png" />
           <h3 id="section-6-3">6.3 Failed Message Handling</h3>
           <p>
             This brings us to the next component in our infrastructure, the Failed Message Handling Component. This 
@@ -1083,7 +1085,7 @@
             need some way of alerting the developer of these messages and providing them a way to interact with them and 
             possibly resubmit them to the main queue.
           </p>
-          <!--image goes here-->
+          <img src="images/diagrams/6.3.png" />
           <h3 id="section-6-4">6.4 Fan-out</h3>
           <p>
             The Fan-out component is responsible for transporting a message from the DLQ and providing separate routes for 
@@ -1107,7 +1109,7 @@
             The SNS receives a message from the publish-to-SNS Lambda and passes a copy of it out to its subscribers. During 
             deployment, Kuri creates an SNS topic and adds two subscribers, the post-to-Slack and the write-to-Dynamo Lambdas.
           </p>
-          <!--image goes here-->
+          <img src="images/diagrams/6.8.png" />
           <h3 id="section-6-6">6.6 Lambdas</h3>
           <p>
             Before going into the specific functionality of the Lambda resources attached to the SNS topic, let’s examine the 
@@ -1118,14 +1120,14 @@
             varying rates. This rate would depend on the number of producer services connected to the main queue and the amount of 
             traffic coming into the application.
           </p>
-          <!--image goes here-->
+          <img src="images/diagrams/6.9.png" />
           <h3 id="section-6-7">6.7 Publish-to-SNS Lambda</h3>
           <p>
             The publish-to-SNS Lambda is responsible for polling the DLQ for messages. The code within the Lambda will 
             reformat the message structure from SQS formatting to SNS formatting which varies slightly. At that point, 
             it will pass the message to the SNS topic for distribution to multiple other resources. 
           </p>
-          <!--image goes here-->
+          <img src="images/diagrams/6.10.png" />
           <h3 id="section-6-8">6.8 Post-to-Slack & Write-to-Dynamo Lambdas</h3>
           <p>
             Both the Post-to-Slack and Write-to-Dynamo Lambdas subscribe to the SNS topic. They also add a timestamp 
@@ -1137,7 +1139,7 @@
             for functions and provides the opportunity for expanding functionality in the future by adding another Lambda to subscribe 
             to the SNS topic.
           </p>
-          <!--image goes here-->
+          <img src="images/diagrams/6.11.png" />
           <h3 id="section-6-9">6.9 Notification</h3>
           <p>
             The next component, Notification, is one of two branches of the Fan-out component. This component consists of Slack which 
@@ -1160,7 +1162,7 @@
             or production environment without having to constantly keep an eye on the Kuri dashboard. These push notifications 
             can help developers keep the mean time to resolution down in the case of any issues relating to failed messages.
           </p>
-          <!--image goes here-->
+          <img src="images/diagrams/6.13.png" />
           <h3 id="section-6-11">6.11 Persistence</h3>
           <p>
             The second component that branches from the Fan-out component, Persistence, consists of DynamoDB which stores 
@@ -1182,7 +1184,7 @@
             key-value NoSQL database designed to run high-performance applications at any scale. Using DynamoDB allows 
             Kuri to store DLQ messages without compromising the scalability and throughput of the entire application.
           </p>
-          <!--image goes here-->
+          <img src="images/diagrams/6.15.png" />
           <p>
             With the dead-letter messages safely stored in DynamoDB and Slack notifications established, how can a 
             Kuri user take action when they receive a DLQ message notification? This brings us to the final component, User Interaction.
@@ -1200,7 +1202,7 @@
             The application server is built primarily with Node.js and the Express framework. This combined with AWS’s DynamoDB 
             SDK allows Kuri to provide RESTful API routes that are consumed with the React-built dashboard.
           </p>
-          <!--image goes here-->
+          <img src="images/diagrams/6.17.png" />
           <p>
             In terms of design decisions for the application server, we decided to go with REST APIs as we needed to interact 
             with the database and provide the developer with a dashboard that makes it easy to interact with their DLQ messages.
@@ -1235,7 +1237,7 @@
             three Lambdas, a Dynamo table, and an S3 bucket. Additionally, an AWS IAM Role provisions 7 policy permissions relating to 
             these resources. To sum up, Kuri automates the provisioning of a total of 17 resources for the developer.
           </p>
-          <!--image goes here-->
+          <img src="images/diagrams/6.19.png" />
           <p>
             Each piece of Kuri’s infrastructure has been connected using the AWS Software Development Kit (SDK) to provide developers 
             with a DLQ pipeline to improve the development and maintenance experience in their projects. For a developer that is unfamiliar 
@@ -1280,7 +1282,7 @@
             especially compared to its counterpart, the SDK. Our goal for Kuri was to create a fast and simple command line 
             tool that would allow users to have Kuri set up and ready to go in a matter of minutes.
           </p>
-          <!--image goes here-->
+          <img src="images/diagrams/7.1.png" />
           <p>
             In light of these concerns, we decided to run a spike to choose which 
             developer kit would be best suited to fulfill the design goals we had in 
@@ -1327,7 +1329,7 @@
             manually code some of the infrastructure components that the CDK would have 
             implemented under the hood.
           </p>
-          <!--image goes here-->
+          <img src="images/diagrams/7.11.png" />
           <p>
             Our basic architecture includes an SQS queue, SNS topic, DynamoDB table, and 
             Lambdas/subscriptions to either poll the queue or receive from the topic. Using 
@@ -1449,7 +1451,7 @@
             message from the DLQ, then sending the POST request to the user-provided Slack path with the message 
             as the body of the request.
           </p>
-          <!--image goes here-->
+          <img src="images/diagrams/7.3.png" />
           <h3 id="section-7-4">7.4 Problem using a Lambda to send the Slack notification</h3>
           <p>
             Using a Lambda to send the notification caused some problems with our current architecture. 
@@ -1478,7 +1480,7 @@
             to the SNS topic. Now each Lambda has a sole responsibility and it will be easier to add additional 
             features to Kuri at a later date -  simply by writing a new Lambda and subscribing it to the SNS topic.
           </p>
-          <!--image goes here-->
+          <img src="images/diagrams/7.4.png" />
           <h3 id="section-7-5">7.5 AWS Message Attributes</h3>
           <p>
             When sending a message to an SQS queue the user can add up to 10 attributes that are stored as 
@@ -1512,7 +1514,7 @@
             peculiar design choice which meant that SNS topic attributes with the type ‘Number’ are not 
             compatible with AWS Lambdas.
           </p>
-          <!--image goes here-->
+          <img src="images/diagrams/7.5.png" />
           <p>
             As maintaining message integrity is a cornerstone of our Kuri application, we needed to find a 
             solution to this design choice by AWS. The problem was clear, anytime an attribute had the type 
@@ -1533,7 +1535,7 @@
             and make any necessary changes to the type attribute. Using this method we were able to achieve 
             a 100% rate of type retention throughout our entire pipeline.
           </p>
-          <!--image goes here-->
+          <img src="images/diagrams/7.51.png" />
 
           <!-- Section 8 -->
           <h2 id="section-8">8. Future Work</h2>
