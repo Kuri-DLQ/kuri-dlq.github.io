@@ -554,7 +554,8 @@ body {
 }
 
 #start-here > div div:last-child > p {
-  color: var(--gray-100);
+  /* color: var(--gray-100); */
+  color: var(--kuri-dark-blue);
   font-size: 1.5rem;
   line-height: 2rem;
   text-align: center;
