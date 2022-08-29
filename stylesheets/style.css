@@ -356,9 +356,9 @@ body {
   font-style: italic;
 }
 
-/* #case-study img {
+#case-study img {
   width: 700px;
-} */
+}
 
 .prose code {
   background-color: var(--gray-100);
