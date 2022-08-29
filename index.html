@@ -861,7 +861,7 @@
             from the DLQ. This is a red flag for the BuyMe team as they do not want any orders to get deleted before
             they are properly fulfilled!
           </p>
-          <img src="images/diagrams/3.4.jpeg" />
+          <img src="images/diagrams/3.4(2).jpeg" />
           <p>
             Another issue is that the entire list of messages is not immediately available for viewing. Instead, the
             BuyMe team discovers that they must manually poll for it. While the team can change the polling settings
@@ -869,7 +869,7 @@
             polling attempt, as only a random subset of them is fetched. Once a message has been fetched, they can
             inspect the message body and attributes.
           </p>
-          <img src="images/diagrams/3.41.jpeg" />
+          <img src="images/diagrams/3.41(2).jpeg" />
           <p>
             A first look makes the BuyMe engineers suspect that the messages are failing due to character-encoding
             errors in the SKU number. To debug this issue, they would ideally like to manually modify each problematic
@@ -879,7 +879,7 @@
             offer the option to modify the messages before the re-drive. Even if they were able to modify the messages,
             the AWS SQS console only allows batch re-drive and not individual message re-drive.
           </p>
-          <img src="images/diagrams/3.6.jpeg" />
+          <img src="images/diagrams/3.6(2).jpeg" />
           <p>
             The BuyMe engineers realize that the limited built-in functionality of the AWS DLQ does not meet their
             requirements. They require a tool that will allow them to view all messages in the DLQ, both as a list and
