@@ -1107,7 +1107,12 @@
             down each high-level component into the AWS resources that make up the component. We will discuss the relationship
             between those resources and how they function together to fulfill the responsibilities of the component.
           </p>
-          <img src="images/diagrams/6.1(2).jpeg" />
+          <figure>
+            <img alt="Kuri high-level architectural components." src="images/diagrams/6.1(2).jpeg" />
+            <figcaption>
+              Fig 6.1 Kuri high-level architectural components.
+            </figcaption>
+          </figure>
           <h3 id="section-6-2">6.2 Inter-Service Communication</h3>
           <p>
             The Inter-Service Communication component consists of 3 resources: the user’s producer and consumer flanking an
@@ -1147,7 +1152,12 @@
             At this point in our infrastructure, messages will be sent from the producer to the queue, the consumer will
             poll for messages and try to process them. But what if messages are failing to be consumed?
           </p>
-          <img src="images/diagrams/6.2(2).jpeg" />
+          <figure>
+            <img alt="Producer, Simple Queue Service, and consumer." src="images/diagrams/6.2(2).jpeg" />
+            <figcaption>
+              Fig 6.2 Producer, Simple Queue Service, and consumer.
+            </figcaption>
+          </figure>
           <h3 id="section-6-3">6.3 Failed Message Handling</h3>
           <p>
             This brings us to the next component in our infrastructure, the Failed Message Handling Component. This
@@ -1177,7 +1187,12 @@
             need some way of alerting the developer of these messages and providing them a way to interact with them and
             possibly resubmit them to the main queue.
           </p>
-          <img src="images/diagrams/6.3(2).jpeg" />
+          <figure>
+            <img alt="SQS main queue and Dead-Letter Queue." src="images/diagrams/6.3(2).jpeg" />
+            <figcaption>
+              Fig 6.3 SQS main queue and Dead-Letter Queue.
+            </figcaption>
+          </figure>
           <h3 id="section-6-4">6.4 Fan-out</h3>
           <p>
             The Fan-out component is responsible for transporting a message from the DLQ and providing separate routes for
@@ -1201,7 +1216,12 @@
             The SNS receives a message from the publish-to-SNS Lambda and passes a copy of it out to its subscribers. During
             deployment, Kuri creates an SNS topic and adds two subscribers, the post-to-Slack and the write-to-Dynamo Lambdas.
           </p>
-          <img src="images/diagrams/6.8(2).jpeg" />
+          <figure>
+            <img alt="Kuri architecture focused on Simple Notification Service." src="images/diagrams/6.8(2).jpeg" />
+            <figcaption>
+              Fig 6.4 Kuri architecture focused on Simple Notification Service.
+            </figcaption>
+          </figure>
           <h4 id="section-6-6">6.4.2 AWS Lambdas</h4>
           <p>
             Before going into the specific functionality of the Lambda resources attached to the SNS topic, let’s examine the
@@ -1212,7 +1232,12 @@
             varying rates. This rate would depend on the number of producer services connected to the main queue and the amount of
             traffic coming into the application.
           </p>
-          <img src="images/diagrams/6.9(2).jpeg" />
+          <figure>
+            <img alt="Lambda and Lambda handler code snippet." src="images/diagrams/6.9(2).jpeg" />
+            <figcaption>
+              Fig 6.5. Lambda and Lambda handler code snippet.
+            </figcaption>
+          </figure>
           <h4 id="section-6-7">6.4.3 Publish-to-SNS Lambda</h4>
           <p>
             The publish-to-SNS Lambda is responsible for polling the DLQ for messages. The code within the Lambda will
