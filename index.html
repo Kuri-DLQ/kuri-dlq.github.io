@@ -1217,9 +1217,9 @@
             deployment, Kuri creates an SNS topic and adds two subscribers, the post-to-Slack and the write-to-Dynamo Lambdas.
           </p>
           <figure>
-            <img alt="Kuri architecture focused on Simple Notification Service." src="images/diagrams/6.8(2).jpeg" />
+            <img alt="Partial Kuri architecture focused on Simple Notification Service." src="images/diagrams/6.8(2).jpeg" />
             <figcaption>
-              Fig 6.4 Kuri architecture focused on Simple Notification Service.
+              Fig 6.4 Partial Kuri architecture focused on Simple Notification Service.
             </figcaption>
           </figure>
           <h4 id="section-6-6">6.4.2 AWS Lambdas</h4>
@@ -1244,7 +1244,12 @@
             reformat the message structure from SQS formatting to SNS formatting which varies slightly. At that point,
             it will pass the message to the SNS topic for distribution to multiple other resources.
           </p>
-          <img src="images/diagrams/6.10(2).jpeg" />
+          <figure>
+            <img alt="Partial Kuri architecture focused on the Publish-to-SNS Lambda." src="images/diagrams/6.10(2).jpeg" />
+            <figcaption>
+              Fig 6.6. Partial Kuri architecture focused on the Publish-to-SNS Lambda.
+            </figcaption>
+          </figure>
           <h4 id="section-6-8">6.4.4 Post-to-Slack and Write-to-Dynamo Lambdas</h4>
           <p>
             Both the Post-to-Slack and Write-to-Dynamo Lambdas subscribe to the SNS topic. They also add a timestamp
@@ -1256,7 +1261,12 @@
             for functions and provides the opportunity for expanding functionality in the future by adding another Lambda to subscribe
             to the SNS topic.
           </p>
-          <img src="images/diagrams/6.11(2).jpeg" />
+          <figure>
+            <img alt="Partial Kuri architecture focused on the Post-to-Slack & Write-to-Dynamo Lambdas." src="images/diagrams/6.11(2).jpeg" />
+            <figcaption>
+              Fig 6.7. Partial Kuri architecture focused on the Post-to-Slack & Write-to-Dynamo Lambdas.
+            </figcaption>
+          </figure>
           <h3 id="section-6-9">6.5 Notification</h3>
           <p>
             The next component, Notification, is one of two branches of the Fan-out component. This component consists of Slack which
@@ -1279,7 +1289,12 @@
             or production environment without having to constantly keep an eye on the Kuri dashboard. These push notifications
             can help developers keep the mean time to resolution down in the case of any issues relating to failed messages.
           </p>
-          <img src="images/diagrams/6.13(2).jpeg" />
+          <figure>
+            <img alt="Partial Kuri architecture focused on Slack." src="images/diagrams/6.13(2).jpeg" />
+            <figcaption>
+              Fig 6.8 Partial Kuri architecture focused on Slack.
+            </figcaption>
+          </figure>
           <h3 id="section-6-11">6.6 Persistence</h3>
           <p>
             The second component that branches from the Fan-out component, Persistence, consists of DynamoDB which stores
@@ -1301,7 +1316,12 @@
             key-value NoSQL database designed to run high-performance applications at any scale. Using DynamoDB allows
             Kuri to store DLQ messages without compromising the scalability and throughput of the entire application.
           </p>
-          <img src="images/diagrams/6.15(2).jpeg" />
+          <figure>
+            <img alt="Partial Kuri architecture focused on DynamoDB." src="images/diagrams/6.15(2).jpeg" />
+            <figcaption>
+              Fig 6.9 Partial Kuri architecture focused on DynamoDB.
+            </figcaption>
+          </figure>
           <p>
             With the dead-letter messages safely stored in DynamoDB and Slack notifications established, how can a
             Kuri user take action when they receive a DLQ message notification? This brings us to the final component, User Interaction.
@@ -1319,7 +1339,12 @@
             The application server is built primarily with Node.js and the Express framework. This combined with AWS’s DynamoDB
             SDK allows Kuri to provide RESTful API routes that are consumed with the React-built dashboard.
           </p>
-          <img src="images/diagrams/6.17(2).jpeg" />
+          <figure>
+            <img alt="Kuri architecture focused on the Application Server and Client." src="images/diagrams/6.17(2).jpeg" />
+            <figcaption>
+              Fig 6.10 Kuri architecture focused on the Application Server and Client.
+            </figcaption>
+          </figure>
           <p>
             In terms of design decisions for the application server, we decided to go with REST APIs as we needed to interact
             with the database and provide the developer with a dashboard that makes it easy to interact with their DLQ messages.
@@ -1342,7 +1367,12 @@
             application server.  When the developer has made all the message modifications needed, the re-drive functionality can
             be used to move the message back to the main queue.
           </p>
-          <img src="images/diagrams/kuri-final-infra.gif" />
+          <figure>
+            <img alt="The traversal of a message within Kuri architecture." src="images/diagrams/kuri-final-infra.gif" />
+            <figcaption>
+              Fig 6.11 The traversal of a message within Kuri architecture.
+            </figcaption>
+          </figure>
           <!--architecture animation gif-->
           <p>Now that we have discussed the entire Kuri architecture, the benefits of using the Kuri package can be readily understood.</p>
           <h3 id="section-6-16">6.9 Benefits of using Kuri</h3>
@@ -1355,7 +1385,12 @@
             three Lambdas, a Dynamo table, and an S3 bucket. Additionally, an AWS IAM Role provisions 7 policy permissions relating to
             these resources. To sum up, Kuri automates the provisioning of a total of 17 resources for the developer.
           </p>
-          <img src="images/diagrams/6.19(2).jpeg" />
+          <figure>
+            <img alt="The AWS resources Kuri deploys." src="images/diagrams/6.19(2).jpeg" />
+            <figcaption>
+              Fig 6.12 The AWS resources Kuri deploys.
+            </figcaption>
+          </figure>
           <p>
             Each piece of Kuri’s infrastructure has been connected using the AWS Software Development Kit (SDK) to provide developers
             with a DLQ pipeline to improve the development and maintenance experience in their projects. For a developer that is unfamiliar
@@ -1400,7 +1435,12 @@
             especially compared to its counterpart, the SDK. Our goal for Kuri was to create a fast and simple command line
             tool that would allow users to have Kuri set up and ready to go in a matter of minutes.
           </p>
-          <img src="images/diagrams/7.1(2).jpeg" />
+          <figure>
+            <img alt="The tradeoffs of using the Cloud Development Kit (CDK) for building AWS infrastructure." src="images/diagrams/7.1(2).jpeg" />
+            <figcaption>
+              Fig 7.1 The tradeoffs of using the Cloud Development Kit (CDK) for building AWS infrastructure.
+            </figcaption>
+          </figure>
           <p>
             In light of these concerns, we decided to run a spike to choose which
             developer kit would be best suited to fulfill the design goals we had in
@@ -1447,7 +1487,12 @@
             manually code some of the infrastructure components that the CDK would have
             implemented under the hood.
           </p>
-          <img src="images/diagrams/7.11(2).jpeg" />
+          <figure>
+            <img alt="The tradeoffs of using the Software Development Kit (SDK) for building AWS infrastructure." src="images/diagrams/7.11(2).jpeg" />
+            <figcaption>
+              Fig 7.2 The tradeoffs of using the Software Development Kit (SDK) for building AWS infrastructure.
+            </figcaption>
+          </figure>
           <p>
             Our basic architecture includes an SQS queue, SNS topic, DynamoDB table, and
             Lambdas/subscriptions to either poll the queue or receive from the topic. Using
@@ -1569,7 +1614,12 @@
             message from the DLQ, then sending the POST request to the user-provided Slack path with the message
             as the body of the request.
           </p>
-          <img src="images/diagrams/7.3(2).jpeg" />
+          <figure>
+            <img alt="An alternative design pattern considered for Kuri to provide Slack notifications." src="images/diagrams/7.3(2).jpeg" />
+            <figcaption>
+              Fig 7.3 An alternative design pattern considered for Kuri to provide Slack notifications.
+            </figcaption>
+          </figure>
           <h3 id="section-7-4">7.4 Issue with sending a Slack notification using AWS Lambda</h3>
           <p>
             Using a Lambda to send the notification caused some problems with our current architecture.
@@ -1598,7 +1648,12 @@
             to the SNS topic. Now each Lambda has a sole responsibility and it will be easier to add additional
             features to Kuri at a later date -  simply by writing a new Lambda and subscribing it to the SNS topic.
           </p>
-          <img src="images/diagrams/7.4(2).jpeg" />
+          <figure>
+            <img alt="The final design pattern used in Kuri to both provide Slack notifications and send the message to the database." src="images/diagrams/7.4(2).jpeg" />
+            <figcaption>
+              Fig 7.4 The final design pattern used in Kuri to both provide Slack notifications and send the message to the database.
+            </figcaption>
+          </figure>
           <h3 id="section-7-5">7.5 AWS Message Attributes</h3>
           <p>
             When sending a message to an SQS queue the user can add up to 10 attributes that are stored as
@@ -1632,7 +1687,12 @@
             peculiar design choice which meant that SNS topic attributes with the type ‘Number’ are not
             compatible with AWS Lambdas.
           </p>
-          <img src="images/diagrams/7.5(2).jpeg" />
+          <figure>
+            <img alt="A message attribute with a type of ‘Number’ is converted to a type of ‘String’ when passed from SNS to Lambda." src="images/diagrams/7.5(2).jpeg" />
+            <figcaption>
+              Fig 7.5 A message attribute with a type of ‘Number’ is converted to a type of ‘String’ when passed from SNS to Lambda.
+            </figcaption>
+          </figure>
           <p>
             As maintaining message integrity is a cornerstone of our Kuri application, we needed to find a
             solution to this design choice by AWS. The problem was clear, anytime an attribute had the type
@@ -1653,8 +1713,12 @@
             and make any necessary changes to the type attribute. Using this method we were able to achieve
             a 100% rate of type retention throughout our entire pipeline.
           </p>
-          <img src="images/diagrams/7.51(2).jpeg" />
-
+          <figure>
+            <img alt="Our solution to achieve message attribute type retention throughout the Kuri pipeline." src="images/diagrams/7.51(2).jpeg" />
+            <figcaption>
+              Fig 7.6 Our solution to achieve message attribute type retention throughout the Kuri pipeline.
+            </figcaption>
+          </figure>
           <!-- Section 8 -->
           <h2 id="section-8">8. Future Work</h2>
           <p>
