@@ -311,6 +311,9 @@ body {
 
 #case-study-content > div {
   padding: 4rem 1rem;
+}
+
+#case-study-content p {
   text-align: justify;
 }
 
