@@ -625,9 +625,9 @@
             (Ref: https://martinfowler.com/articles/microservices.html)
           </p>
           <figure>
-            <img alt="Monolithic vs microservices architecture" src="images/diagrams/1.1(2).jpeg" />
+            <img alt="Monolithic vs microservices architecture." src="images/diagrams/1.1(2).jpeg" />
             <figcaption>
-              Fig 1.1 Monolithic vs microservices architecture
+              Fig 1.1 Monolithic vs microservices architecture.
             </figcaption>
           </figure>
           <p>
@@ -657,7 +657,12 @@
             is not affected. The producer can continue to add messages to the queue which will get
             processed when the consumer recovers from the failure.
           </p>
-          <img src="images/diagrams/1.2(2).jpeg" />
+          <figure>
+            <img alt="Using a message queue to implement asynchronous communication between microservices." src="images/diagrams/1.2(2).jpeg" />
+            <figcaption>
+              Figure 1.2 Using a message queue to implement asynchronous communication between microservices.
+            </figcaption>
+          </figure>
           <h3 id="section-1-3">1.3 Message Queues</h3>
           <p>
             There are multiple options available for developers in need of a message queue system.
@@ -700,7 +705,12 @@
             response has been received by the queue when the Visibility Timeout expires, the message becomes
             visible again to all consumers.
           </p>
-          <img src="images/diagrams/1.4(2).jpeg" />
+          <figure>
+            <img alt="The Visibility Timeout gives the consumer time to process the message." src="images/diagrams/1.4(2).jpeg" />
+            <figcaption>
+              Fig 1.3 The Visibility Timeout gives the consumer time to process the message.
+            </figcaption>
+          </figure>
           <p>
             An issue may arise when the consumer takes longer to process the message than the Visibility
             timeout is set for. In that case, even if the consumer eventually completes processing the
@@ -740,7 +750,12 @@
             service that they came into the ordering service. For these reasons, the BuyMe team decided that an
             AWS standard SQS queue would be a good choice for the job.
           </p>
-          <img src="images/diagrams/2.1(2).jpeg" />
+          <figure>
+            <img alt="BuyMe implements a standard SQS queue for communication between the ordering and inventory microservices." src="images/diagrams/2.1(2).jpeg" />
+            <figcaption>
+              Fig 2.1 BuyMe implements a standard SQS queue for communication between the ordering and inventory microservices.
+            </figcaption>
+          </figure>
           <p>
             Any live data dashboards, such as stock prices ticking up and down
             on a website, are examples of realtime web applications. The same
@@ -771,7 +786,12 @@
             expect to see. They discover that a considerable number of messages still in the queue
             should have been processed by the inventory service already.
           </p>
-          <img src="images/diagrams/2.2(2).jpeg" />
+          <figure>
+            <img alt="Poison messages accumulate in the message queue." src="images/diagrams/2.2(2).jpeg" />
+            <figcaption>
+              Fig 2.2 Poison messages accumulate in the message queue.
+            </figcaption>
+          </figure>
           <p>
             They could just delete the unprocessed messages but that would mean orders would go
             unfulfilled causing customer dissatisfaction and profit loss. To try to alleviate the
@@ -788,7 +808,12 @@
             messages will not remain in the queue and no messages will be lost during communication between
             services.
           </p>
-          <img src="images/diagrams/3.1.jpeg" />
+          <figure>
+            <img alt="AWS definition of a dead-letter queue." src="images/diagrams/3.1.jpeg" />
+            <figcaption>
+              Fig 3.1 AWS definition of a dead-letter queue.
+            </figcaption>
+          </figure>
           <h3 id="section-3-2">3.2 How is a DLQ configured?</h3>
           <p>
             When configuring a DLQ, it is imperative to specify the conditions under which the main queue
@@ -815,8 +840,12 @@
             would allow the consumer enough chances to retry processing a message and would also avoid blocking
             the queue for a significant amount of time.
           </p>
-          <img src="images/diagrams/3.2.jpeg" />
-
+          <figure>
+            <img alt="Configuring the Maximum receives setting for the main queue." src="images/diagrams/3.2.jpeg" />
+            <figcaption>
+              Fig 3.2 Configuring the Maximum receives setting for the main queue.
+            </figcaption>
+          </figure>
           <h3 id="section-3-3">3.3 Importance of DLQs</h3>
           <p>
             When a messaging system lies at the heart of application architecture, the DLQ is a crucial part of
@@ -834,8 +863,12 @@
             succeed. It is a source of error-handling strategies ranging from simple reprocessing of messages by
             the main queue to advanced analytics of message data for real-time insights.
           </p>
-          <img src="images/diagrams/3.3(2).jpeg" />
-
+          <figure>
+            <img alt="The primary benefits of  DLQs." src="images/diagrams/3.3(2).jpeg" />
+            <figcaption>
+              Fig 3.3 The primary benefits of  DLQs.
+            </figcaption>
+          </figure>
           <h3 id="section-3-4">3.4 The AWS DLQ</h3>
           <p>
             Now that our engineering team at BuyMe has the DLQ in place and can view the poison messages, they are
@@ -850,7 +883,12 @@
             from the DLQ. This is a red flag for the BuyMe team as they do not want any orders to get deleted before
             they are properly fulfilled!
           </p>
-          <img src="images/diagrams/3.4(2).jpeg" />
+          <figure>
+            <img alt="The AWS SQS console with the Message retention period highlighted." src="images/diagrams/3.4(2).jpeg" />
+            <figcaption>
+              Fig 3.4 The AWS SQS console with the Message retention period highlighted.
+            </figcaption>
+          </figure>
           <p>
             Another issue is that the entire list of messages is not immediately available for viewing. Instead, the
             BuyMe team discovers that they must manually poll for it. While the team can change the polling settings
@@ -858,7 +896,12 @@
             polling attempt, as only a random subset of them is fetched. Once a message has been fetched, they can
             inspect the message body and attributes.
           </p>
-          <img src="images/diagrams/3.41(2).jpeg" />
+          <figure>
+            <img alt="AWS DLQ console manual polling fetches a random subset of messages in the DLQ." src="images/diagrams/3.41(2).jpeg" />
+            <figcaption>
+              Fig 3.5 AWS DLQ console manual polling fetches a random subset of messages in the DLQ.
+            </figcaption>
+          </figure>
           <p>
             A first look makes the BuyMe engineers suspect that the messages are failing due to character-encoding
             errors in the SKU number. To debug this issue, they would ideally like to manually modify each problematic
@@ -868,7 +911,12 @@
             offer the option to modify the messages before the re-drive. Even if they were able to modify the messages,
             the AWS SQS console only allows batch re-drive and not individual message re-drive.
           </p>
-          <img src="images/diagrams/3.6(2).jpeg" />
+          <figure>
+            <img alt="Viewing a DLQ message in the AWS console. Modifications of the message are not supported." src="images/diagrams/3.6(2).jpeg" />
+            <figcaption>
+              Fig 3.6 Viewing a DLQ message in the AWS console. Modifications of the message are not supported.
+            </figcaption>
+          </figure>
           <p>
             The BuyMe engineers realize that the limited built-in functionality of the AWS DLQ does not meet their
             requirements. They require a tool that will allow them to view all messages in the DLQ, both as a list and
@@ -903,12 +951,22 @@
             which accordingly offer more control, albeit at the potential
             expense of more configuration and deployment issues.
           </p>
-          <img src="images/diagrams/4.1(2).jpeg" />
+          <figure>
+            <img alt="Existing DLQ-monitoring solutions." src="images/diagrams/4.1(2).jpeg" />
+            <figcaption>
+              Fig 4.1 Existing DLQ-monitoring solutions.
+            </figcaption>
+          </figure>
           <p>
             The BuyMe team is in a bit of a bind. Currently, they are restricted by the offerings of the AWS DLQ but can’t make
             use of any of the available DLQ monitoring tools discussed above, missing out on extensive functionality.
           </p>
-          <img src="images/diagrams/4.2(2).jpeg" />
+          <figure>
+            <img alt="Comparison of AWS DLQ console functionality with existing solutions." src="images/diagrams/4.2(2).jpeg" />
+            <figcaption>
+              Fig 4.2 Comparison of AWS DLQ console functionality with existing solutions.
+            </figcaption>
+          </figure>
           <p>
             So what options does the team at BuyMe have when they discover that a message has failed to be processed and
             has been moved to the AWS DLQ? Currently, they are restricted by the offerings of the AWS DLQ and can’t make
@@ -924,7 +982,12 @@
             infrastructure. When we compare Kuri with the functionality of the AWS DLQ and the capabilities of the existing
             monitoring tools, Kuri meets the majority of the requirements and is compatible with AWS queues.
           </p>
-          <img src="images/diagrams/5.1(3).jpeg" />
+          <figure>
+            <img alt="Comparison of Kuri with existing solutions." src="images/diagrams/5.1(3).jpeg" />
+            <figcaption>
+              Fig 5.1 Comparison of Kuri with existing solutions.
+            </figcaption>
+          </figure>
           <p>Aside from being open-source, there are many reasons why Kuri would be a great tool for the BuyMe team.</p>
           <p>
             First, by providing just a handful of responses to command line questions posed by Kuri, a pipeline incorporating
@@ -944,7 +1007,12 @@
               <li>Delete and re-drive individual messages or perform batch delete and re-drive operations</li>
             </ul>
           </p>
-          <img src="images/diagrams/5.12(2).jpeg" />
+          <figure>
+            <img alt="Kuri features." src="images/diagrams/5.12(2).jpeg" />
+            <figcaption>
+              Fig 5.2 Kuri features.
+            </figcaption>
+          </figure>
           <h3 id="section-5-2">5.2 Kuri Installation</h3>
           <p>
             There are three steps our team at BuyMe will take to install and use Kuri. The first step is to install
@@ -952,28 +1020,53 @@
             as seamless as possible. The BuyMe team will not need to manually update configuration files or make any adjustments
             once the set-up is complete.
           </p>
-          <img src="images/gifs/kuri-install.gif" />
+          <figure>
+            <img alt="Kuri installation." src="images/gifs/kuri-install.gif" />
+            <figcaption>
+              Fig 5.3 Kuri installation.
+            </figcaption>
+          </figure>
           <p>
             Once installation is finished, the commands available in the Kuri package can be pulled up, which currently are the
             `deploy` and `view` commands.
           </p>
-          <img src="images/gifs/kuri.gif" />
+          <figure>
+            <img alt="Kuri commands." src="images/gifs/kuri.gif" />
+            <figcaption>
+              Fig 5.4 Kuri commands.
+            </figcaption>
+          </figure>
           <p>
             When deploying the application, our team at BuyMe will choose for Kuri to create a DLQ only as they already have
             the main queue. They’ll provide its URL and their AWS region and instruct Kuri to send notifications to their Slack
             channel. Finally, they’ll confirm the configuration options and Kuri will be deployed through the provision of the
             various AWS resources.
           </p>
-          <img src="images/gifs/kuri-deploy.gif" />
+          <figure>
+            <img alt="Kuri deployment." src="images/gifs/kuri-deploy.gif" />
+            <figcaption>
+              Fig 5.5 Kuri deployment.
+            </figcaption>
+          </figure>
           <p>And that’s it, Kuri is deployed, leaving them with the final step of viewing and interacting with the Kuri dashboard.</p>
-          <img src="images/gifs/kuri-view.gif" />
+          <figure>
+            <img alt="Kuri view command used to start the Kuri dashboard." src="images/gifs/kuri-view.gif" />
+            <figcaption>
+              Fig 5.6 Kuri view command used to start the Kuri dashboard.
+            </figcaption>
+          </figure>
           <h3 id="section-5-3">5.3 Kuri Dashboard</h3>
           <p>
             When opening the dashboard, the team can first see a summary of the current state of the DLQ at the top left corner.
             Each message with its id, timestamp, and body is displayed in a table format. There is functionality available for
             sorting and viewing the messages according to the message timestamp and body.
           </p>
-          <img src="images/diagrams/5.3.png" />
+          <figure>
+            <img alt="Overview of the Kuri dashboard." src="images/diagrams/5.3.png" />
+            <figcaption>
+              Fig 5.7 Overview of the Kuri dashboard.
+            </figcaption>
+          </figure>
           <p>
             They can also re-drive all the messages back to the main queue for one more attempt at processing by the consumer. If
             the attempt is unsuccessful, the messages will reappear in the DLQ.
@@ -983,12 +1076,22 @@
             details which include the id, timestamp, body, and some optional user-provided properties. If required, they can
             permanently delete the message from the queue.
           </p>
-          <img src="images/diagrams/5.31.png" />
+          <figure>
+            <img alt="The Kuri dashboard action dropdown menu allows the user to view the details of a message, delete a message or redrive it back to the main queue." src="images/diagrams/5.31.png" />
+            <figcaption>
+              Fig 5.8 The Kuri dashboard action dropdown menu allows the user to view the details of a message, delete a message or redrive it back to the main queue.
+            </figcaption>
+          </figure>
           <p>
             They can also edit the message and save the updated version back in the DLQ. Most importantly, after editing the
             message they have the option to re-drive the message back to the main queue so that the consumer can retry processing it.
           </p>
-          <img src="images/gifs/5.32.gif" />
+          <figure>
+            <img alt="Editing a DLQ message using the Kuri dashboard." src="images/gifs/5.32.gif" />
+            <figcaption>
+              Fig 5.9 Editing a DLQ message using the Kuri dashboard.
+            </figcaption>
+          </figure>
           <p>Finally, they can batch-delete the messages if they do not need to perform any further processing.</p>
           <p>
             We’ve explored the requirements of the BuyMe team that Kuri satisfies and how they can use it. Now it’s
