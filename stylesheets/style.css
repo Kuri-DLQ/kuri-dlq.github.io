@@ -309,7 +309,7 @@ body {
   max-width: 100%;
 }
 
-#case-study-content > div {
+#case-study-content > div:not(h1) {
   padding: 4rem 1rem;
   text-align: justify;
 }
