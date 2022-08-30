@@ -44,7 +44,6 @@ body {
   box-sizing: border-box;
   font-family: 'Roboto', sans-serif;
   height: 100%;
-  text-align: justify;
 }
 
 *,
@@ -312,6 +311,7 @@ body {
 
 #case-study-content > div {
   padding: 4rem 1rem;
+  text-align: justify;
 }
 
 #case-study-content .prose h1::before,
@@ -357,6 +357,7 @@ body {
 #case-study img {
   width: 700px;
   margin: auto;
+  display: block;
 }
 
 .prose code {
