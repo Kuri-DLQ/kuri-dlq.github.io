@@ -1,4 +1,4 @@
-@font-face {
+/* @font-face {
   font-family: "Montserrat";
   src: url("fonts/montserrat/Montserrat-Regular.ttf") format("tff");
 }
@@ -6,7 +6,8 @@
 @font-face {
   font-family: "Century Gothic";
   src: url("fonts/centurygothic/GOTHICB.TTF") format("tff");
-}
+} */
+@import url(http://fonts.googleapis.com/css?family=Roboto:400,100,100italic,300,300ita‌​lic,400italic,500,500italic,700,700italic,900italic,900);
 
 :root {
 
@@ -41,9 +42,9 @@
 html,
 body {
   box-sizing: border-box;
-  font-family: Montserrat, system-ui, -apple-system, "Segoe UI", Roboto,
-    Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji";
+  font-family: 'Roboto', sans-serif;
   height: 100%;
+  text-align: justify;
 }
 
 *,
@@ -299,13 +300,10 @@ body {
 }
 
 /* Case Study */
-#case-study-content {
-  /* border-bottom: 1px solid var(--gray-200);
-  border-top: 1px solid var(--gray-200); */
-}
 
 #case-study-content img {
   max-width: 100%;
+  margin: auto;
 }
 
 #case-study-content video {
@@ -358,6 +356,7 @@ body {
 
 #case-study img {
   width: 700px;
+  margin: auto;
 }
 
 .prose code {
@@ -421,9 +420,6 @@ body {
 
 #our-team .profile > * + * {
   margin-top: 1.5rem;
-}
-
-#our-team .profile > div {
 }
 
 #our-team .profile > div > * + * {

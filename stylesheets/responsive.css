@@ -64,7 +64,7 @@
 
   #header nav a:hover {
     border-bottom-color: var(--gray-300);
-    color: var(--gray-700);
+    color: var(--kuri-coral);
   }
 
   #header nav a.selected {
