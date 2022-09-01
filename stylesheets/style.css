@@ -317,6 +317,10 @@ body {
   text-align: justify;
 }
 
+#case-study-content code {
+  font-size: 100%;
+}
+
 #case-study-content .prose h1::before,
 #case-study-content .prose h2::before,
 #case-study-content .prose h3::before,
@@ -361,6 +365,10 @@ body {
   width: 700px;
   margin: auto;
   display: block;
+}
+
+#case-study figcaption {
+  text-align: center;
 }
 
 .prose code {
