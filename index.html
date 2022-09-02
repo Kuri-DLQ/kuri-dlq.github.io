@@ -570,7 +570,7 @@
             to maximize the benefits of the decoupling nature of the microservices architecture,
             asynchronous communication can be used. One of the ways to implement asynchronous
             communication between microservices is to use a message queue that sits between the
-            services. A message is the data transported between the sender service and the receiver
+            services [2]. A message is the data transported between the sender service and the receiver
             service. The message queue holds the messages that are waiting to be processed by the
             receiver service. The service that adds messages to the queue is called a producer and
             the service that receives messages from the queue is called a consumer.
@@ -712,7 +712,7 @@
           <h3 id="section-3-1">3.1 What is a DLQ?</h3>
           <p>
             A dead-letter queue (DLQ) is “a queue to which a source queue can send messages if the main
-            queue’s consumer application is unable to consume the messages successfully”. In other words,
+            queue’s consumer application is unable to consume the messages successfully” [3]. In other words,
             we can think of a DLQ as a backup queue that captures all messages that fail to be processed
             from the main queue by the consumer application. Configuring a DLQ ensures that unprocessable
             messages will not remain in the queue and no messages will be lost during communication between
@@ -841,7 +841,7 @@
             It becomes apparent to the team at BuyMe that they are not the only ones frustrated by the limitations of
             built-in DLQ functionality. There are several tools available for making it handy to monitor dead-lettered
             messages in testing, development, and production environments. A leading platform in this area is Serverless
-            360, a service rich in features that fulfill a large number of requirements:
+            360 [4], a service rich in features that fulfill a large number of requirements:
           </p>
           <ul>
             <li>Easy viewing of messages</li>
@@ -852,7 +852,7 @@
             <li>Setting a timer for particular operations</li>
           </ul>
           <p>
-            While other solutions such as Cerebrata, Cogin, and Service Bus Explorer do not have the full range of features
+            While other solutions such as Cerebrata, Cogin, and Service Bus Explorer [5, 6, 7] do not have the full range of features
             that Serverless 360 offers, they do check the boxes that our team at BuyMe is interested in. However, 3 of the
             4 tools are only available for purchase and unfortunately, none of them is compatible with AWS.
           </p>
@@ -1653,6 +1653,17 @@
           <h2 id="section-9">9. References</h2>
           <ol>
             <li>James Lewis and Martin Fowler. Microservices - a definition of this new architectural term. (March 25 2014). Retrieved on Aug 1 2022 from <a href="https://martinfowler.com/articles/microservices.html">https://martinfowler.com/articles/microservices.html</a></li>
+            <li>AWS. Message Queues. Retrieved on Aug 1 from <a href='https://aws.amazon.com/message-queue/'>https://aws.amazon.com/message-queue/</a></li>
+            <li>AWS. Amazon SQS dead-letter queues. Retrieved on Aug 1 from <a
+                href='https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-dead-letter-queues.html'>https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-dead-letter-queues.html</a></li>
+            <li>Serverless 360. Azure Service Bus Dead-Letter Queue Monitoring. Retrieved on Jul 10 from <a
+                href='https://www.serverless360.com/blog/azure-service-bus-dead-letter-queue-monitoring#Repair%20and%20resubmit%20the%20dead%20lettered%20messages%20with%20no%20code%20overhead'>https://www.serverless360.com/blog/azure-service-bus-dead-letter-queue-monitoring#Repair%20and%20resubmit%20the%20dead%20lettered%20messages%20with%20no%20code%20overhead</a></li>
+            <li>Cerebrata. Modify and Resubmit Messages in Azure Service Bus Queues and Topics/Subscriptions. Retrieved on Jul 10 from <a
+                href='https://cerebrata.com/blog/modify-and-resubmit-messages-in-azure-service-bus-queues-and-topics-subscriptions'>https://cerebrata.com/blog/modify-and-resubmit-messages-in-azure-service-bus-queues-and-topics-subscriptions</a></li>
+            <li>Cogin. QueueExplorer. Retrieved on Jul 10 from <a
+                    href='https://www.cogin.com/mq/'>https://www.cogin.com/mq/</a></li>
+            <li>Cloud Avenue. Using Service Bus Explorer to manage and test Service Bus Queues, topics, relays, event hubs and notification hubs. Retrieved on Jul 10 from <a
+                        href='https://cloudavenue.in/2018/08/08/servicebusexplorer/'>https://cloudavenue.in/2018/08/08/servicebusexplorer/</a></li>
           </ol>
         </div>
       </div>
